@@ -19,15 +19,15 @@
     @apply bg-[#FAF8F5] text-surface-900 min-h-screen overflow-x-hidden relative font-sans antialiased selection:bg-primary-100 selection:text-primary-800;
   }
 
-  /* Living Atmosphere — Soft floating ambient light fields */
+  /* 4-Corner Living Atmosphere (Lavender, Warm Gold, Sky Blue, Pink) */
   body::before {
     content: '';
     position: fixed;
-    top: -15%;
-    left: -10%;
+    top: -20%;
+    left: -15%;
     width: 65vw;
     height: 65vh;
-    background: radial-gradient(circle, rgba(221, 214, 254, 0.45) 0%, rgba(245, 243, 255, 0.15) 50%, transparent 70%);
+    background: radial-gradient(circle, rgba(196, 181, 253, 0.45) 0%, rgba(237, 233, 254, 0.2) 50%, transparent 70%);
     filter: blur(80px);
     pointer-events: none;
     z-index: 0;
@@ -37,12 +37,12 @@
   body::after {
     content: '';
     position: fixed;
-    bottom: -15%;
-    right: -10%;
-    width: 60vw;
-    height: 60vh;
-    background: radial-gradient(circle, rgba(254, 205, 211, 0.35) 0%, rgba(255, 241, 242, 0.15) 50%, transparent 70%);
-    filter: blur(80px);
+    bottom: -20%;
+    right: -15%;
+    width: 65vw;
+    height: 65vh;
+    background: radial-gradient(circle, rgba(251, 113, 133, 0.35) 0%, rgba(253, 224, 71, 0.22) 50%, transparent 70%);
+    filter: blur(85px);
     pointer-events: none;
     z-index: 0;
     animation: driftB 28s ease-in-out infinite alternate;
@@ -53,10 +53,10 @@
       transform: translate(0, 0) scale(1);
     }
     50% {
-      transform: translate(8vw, 6vh) scale(1.08);
+      transform: translate(6vw, 5vh) scale(1.06);
     }
     100% {
-      transform: translate(-4vw, 10vh) scale(0.95);
+      transform: translate(-3vw, 8vh) scale(0.95);
     }
   }
 
@@ -65,10 +65,10 @@
       transform: translate(0, 0) scale(1);
     }
     50% {
-      transform: translate(-6vw, -8vh) scale(1.06);
+      transform: translate(-5vw, -6vh) scale(1.05);
     }
     100% {
-      transform: translate(5vw, -4vh) scale(0.96);
+      transform: translate(4vw, -3vh) scale(0.96);
     }
   }
 
@@ -103,17 +103,17 @@
 
   /* Tactile Solid Cards */
   .card-surface {
-    @apply bg-white border border-black/[0.05] rounded-3xl shadow-card transition-all duration-200;
+    @apply bg-white/95 border border-black/[0.05] rounded-3xl shadow-card transition-all duration-200;
   }
 
   .card-interactive {
     @apply card-surface hover:shadow-card-hover hover:-translate-y-1 active:scale-[0.99] cursor-pointer;
   }
 
-  /* Tactile Button Suite */
+  /* Luminous Button Suite */
   .btn-primary {
-    @apply px-6 py-3 bg-primary-600 hover:bg-primary-700 active:bg-primary-800
-      text-white font-heading font-semibold rounded-2xl shadow-sm hover:shadow-glow
+    @apply px-6 py-3 bg-gradient-to-r from-primary-600 via-indigo-600 to-pink-500 hover:from-primary-700 hover:via-indigo-700 hover:to-pink-600
+      text-white font-heading font-semibold rounded-2xl shadow-soft hover:shadow-glow
       active:scale-[0.98] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
       flex items-center justify-center gap-2 text-sm;
   }
@@ -123,6 +123,12 @@
       border border-black/[0.06] hover:border-black/[0.12] shadow-soft
       active:scale-[0.98] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
       flex items-center justify-center gap-2 text-sm;
+  }
+
+  .btn-gold {
+    @apply px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700
+      text-white font-heading font-semibold rounded-2xl shadow-soft hover:shadow-glow-gold
+      active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 text-sm;
   }
 
   .btn-ghost {

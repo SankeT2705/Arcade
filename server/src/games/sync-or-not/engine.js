@@ -6,7 +6,7 @@ import db from '../../db/queries.js';
  * Sync or Not — Server Engine
  *
  * Manages game sessions: question selection, answer collection,
- * reveal logic, streak tracking, and sync percentage calculation.
+ * reveal logic, streak tracking, and psychological compatibility analytics.
  * Server is the single source of truth — never trusts client answers.
  */
 
@@ -41,6 +41,127 @@ export function cleanup(roomCode) {
 }
 
 /**
+ * Compute multi-dimensional psychological & behavioral compatibility profile.
+ */
+function computePsychologicalProfile(results) {
+  if (!results || results.length === 0) {
+    return {
+      dimensions: {
+        emotionalIntuition: 50,
+        communicationConflict: 50,
+        tasteLifestyle: 50,
+        riskSpontaneity: 50,
+      },
+      archetype: {
+        name: 'Harmonious Vibe',
+        tagline: 'Balanced Connection',
+        description: 'You share a great mix of shared instincts and unique individuality.',
+      },
+      insights: ['You balance each other with unique perspectives.'],
+    };
+  }
+
+  const scores = {
+    emotionalIntuition: { matched: 0, total: 0 },
+    communicationConflict: { matched: 0, total: 0 },
+    tasteLifestyle: { matched: 0, total: 0 },
+    riskSpontaneity: { matched: 0, total: 0 },
+  };
+
+  results.forEach((r) => {
+    const qId = r.question?.id || 0;
+    const cat = r.question?.category || 'psychological';
+
+    // Map question into specific psychological dimension
+    if (cat === 'food' || cat === 'culture' || cat === 'lifestyle') {
+      scores.tasteLifestyle.total++;
+      if (r.matched) scores.tasteLifestyle.matched++;
+    } else if (qId >= 527 && qId <= 532) {
+      // Conflict & communication
+      scores.communicationConflict.total++;
+      if (r.matched) scores.communicationConflict.matched++;
+    } else if (qId === 305 || qId === 401 || qId === 402 || qId === 403 || qId === 404 || qId === 503 || qId === 506) {
+      // Risk & spontaneity
+      scores.riskSpontaneity.total++;
+      if (r.matched) scores.riskSpontaneity.matched++;
+    } else {
+      // General psychological & intuitive alignment
+      scores.emotionalIntuition.total++;
+      if (r.matched) scores.emotionalIntuition.matched++;
+    }
+  });
+
+  const calcPercentage = (dim) => {
+    if (scores[dim].total === 0) return 75; // Baseline healthy connection
+    return Math.round((scores[dim].matched / scores[dim].total) * 100);
+  };
+
+  const dimensions = {
+    emotionalIntuition: calcPercentage('emotionalIntuition'),
+    communicationConflict: calcPercentage('communicationConflict'),
+    tasteLifestyle: calcPercentage('tasteLifestyle'),
+    riskSpontaneity: calcPercentage('riskSpontaneity'),
+  };
+
+  const totalMatches = results.filter((r) => r.matched).length;
+  const overallPercent = Math.round((totalMatches / results.length) * 100);
+
+  let archetype;
+  const insights = [];
+
+  if (overallPercent >= 85) {
+    archetype = {
+      name: 'Unspoken Telepathy',
+      tagline: 'Effortless Resonance',
+      badge: '✨ Soul Link',
+      description: 'You operate on the exact same wavelength. Your instincts, emotional pace, and core values match almost effortlessly.',
+    };
+    insights.push('Your emotional intuition and decision patterns are almost identical.');
+    insights.push('You read social situations and friend dynamics through the same lens.');
+  } else if (overallPercent >= 65) {
+    archetype = {
+      name: 'Balanced Resonance',
+      tagline: 'Strong Core Alignment',
+      badge: '⚡ Deep Resonance',
+      description: 'Strong core alignment with enough complementary flavor to keep conversations inspiring, grounded, and engaging.',
+    };
+    insights.push('You share foundational life principles while bringing fresh viewpoints.');
+    insights.push('Disagreements become productive discussions rather than friction.');
+  } else if (overallPercent >= 45) {
+    archetype = {
+      name: 'Complementary Counterparts',
+      tagline: 'Dynamic Yin & Yang',
+      badge: '🧩 Complementary Duo',
+      description: 'You bring different strengths and instincts to the table, creating a rich balance where one covers the blind spots of the other.',
+    };
+    insights.push('One of you brings spontaneous energy while the other adds grounding clarity.');
+    insights.push('Your differing tastes keep shared experiences diverse and novel.');
+  } else {
+    archetype = {
+      name: 'Dynamic Explorers',
+      tagline: 'Unique Individual Minds',
+      badge: '🔭 Independent Thinkers',
+      description: 'Completely distinct individual perspectives that challenge, entertain, and surprise each other at every turn.',
+    };
+    insights.push('You approach life and decisions from completely independent angles.');
+    insights.push('There is never a dull moment because your reactions are unpredictably fun.');
+  }
+
+  // Dimension specific insight
+  if (dimensions.tasteLifestyle >= 70) {
+    insights.push('Shared taste in food and culture makes casual hangouts effortless.');
+  } else if (dimensions.emotionalIntuition >= 70) {
+    insights.push('High emotional empathy allows you to understand each other without explanation.');
+  }
+
+  return {
+    dimensions,
+    archetype,
+    insights,
+  };
+}
+
+/**
  * Get current session state for reconnection.
  * @param {string} roomCode
  * @returns {object|null}
@@ -60,6 +181,7 @@ export function getSessionState(roomCode) {
       ? Math.round((session.totalMatches / session.totalAnswered) * 100)
       : 0,
     results: session.results,
+    analytics: computePsychologicalProfile(session.results),
   };
 }
 
@@ -96,43 +218,34 @@ function handleStart(io, socket, data) {
     questions,
     totalRounds,
     currentRound: 0,
-    phase: 'question', // 'question' | 'reveal' | 'ended'
-    answers: {}, // { playerId: 'A' | 'B' }
+    phase: 'question',
+    answers: {},
+    results: [],
     streak: 0,
     bestStreak: 0,
     totalMatches: 0,
     totalAnswered: 0,
-    results: [], // { questionId, answers: { p1: 'A', p2: 'B' }, matched }
     timer: null,
+    readyForNext: new Set(),
   };
 
   sessions.set(roomCode, session);
   roomManager.setActiveGame(roomCode, 'sync-or-not');
 
-  // Send first question to both players
-  const question = questions[0];
-  emitToRoom(io, room, 'sync-or-not:round', {
-    round: 0,
-    totalRounds,
-    question: { id: question.id, category: question.category, optionA: question.optionA, optionB: question.optionB },
-    timeLimit: ROUND_TIMER_MS,
-  });
-
-  // Start round timer
-  startRoundTimer(io, roomCode);
+  startRound(io, roomCode);
 }
 
 function handleAnswer(io, socket, data) {
   const { roomCode, answer } = data || {};
 
-  if (!roomCode || !answer || !['A', 'B'].includes(answer)) {
-    socket.emit('sync-or-not:error', { message: 'Invalid answer.' });
+  if (!roomCode || (answer !== 'A' && answer !== 'B')) {
+    socket.emit('sync-or-not:error', { message: 'Invalid answer. Must be A or B.' });
     return;
   }
 
   const session = sessions.get(roomCode);
   if (!session || session.phase !== 'question') {
-    socket.emit('sync-or-not:error', { message: 'No active question.' });
+    socket.emit('sync-or-not:error', { message: 'Not accepting answers right now.' });
     return;
   }
 
@@ -145,28 +258,34 @@ function handleAnswer(io, socket, data) {
     return;
   }
 
-  // Check if already answered
+  // Record answer (prevent duplicate submissions)
   if (session.answers[player.id]) {
-    socket.emit('sync-or-not:error', { message: 'Already answered this round.' });
     return;
   }
 
-  session.answers[player.id] = answer;
+  session.answers[player.id] = {
+    answer,
+    name: player.name,
+    timestamp: Date.now(),
+  };
 
-  // Confirm to the player
-  socket.emit('sync-or-not:answer-ack', { answer });
+  // Notify other player that this player has answered (without revealing the choice)
+  emitToRoom(io, room, 'sync-or-not:player-answered', {
+    playerId: player.id,
+    playerName: player.name,
+  });
 
-  // Check if both players have answered
+  // Check if both players answered
   const connectedPlayers = room.players.filter((p) => p.connected);
-  const allAnswered = connectedPlayers.every((p) => session.answers[p.id]);
+  const answeredCount = Object.keys(session.answers).length;
 
-  if (allAnswered) {
-    // Clear the timer and reveal
+  if (answeredCount >= connectedPlayers.length && connectedPlayers.length >= 2) {
+    // Both answered — clear timer and reveal
     if (session.timer) {
       clearTimeout(session.timer);
       session.timer = null;
     }
-    revealAnswers(io, roomCode);
+    revealRound(io, roomCode);
   }
 }
 
@@ -182,12 +301,17 @@ function handleNext(io, socket, data) {
   const player = room.players.find((p) => p.socketId === socket.id);
   if (!player) return;
 
-  advanceRound(io, roomCode);
+  session.readyForNext.add(player.id);
+
+  // If both players clicked next, advance
+  const connectedPlayers = room.players.filter((p) => p.connected);
+  if (session.readyForNext.size >= connectedPlayers.length) {
+    advanceRound(io, roomCode);
+  }
 }
 
 function handlePlayAgain(io, socket, data) {
   const { roomCode, rounds } = data || {};
-  // Re-start with a fresh session
   handleStart(io, socket, { roomCode, rounds });
 }
 
@@ -197,79 +321,67 @@ function startRoundTimer(io, roomCode) {
   const session = sessions.get(roomCode);
   if (!session) return;
 
+  if (session.timer) clearTimeout(session.timer);
+
   session.timer = setTimeout(() => {
     session.timer = null;
-    // Time's up — reveal whatever we have
-    revealAnswers(io, roomCode);
+    revealRound(io, roomCode);
   }, ROUND_TIMER_MS);
 }
 
-function revealAnswers(io, roomCode) {
+function revealRound(io, roomCode) {
   const session = sessions.get(roomCode);
   if (!session || session.phase !== 'question') return;
 
   session.phase = 'reveal';
+  session.readyForNext = new Set();
 
   const room = roomManager.getRoom(roomCode);
   if (!room) return;
 
-  const players = room.players;
-  const p1 = players[0];
-  const p2 = players[1];
+  const playerIds = Object.keys(session.answers);
+  const isMatch =
+    playerIds.length >= 2 &&
+    session.answers[playerIds[0]]?.answer === session.answers[playerIds[1]]?.answer;
 
-  const answer1 = session.answers[p1?.id] || null;
-  const answer2 = session.answers[p2?.id] || null;
+  session.totalAnswered++;
 
-  // Both must have answered for it to count
-  const bothAnswered = answer1 !== null && answer2 !== null;
-  const matched = bothAnswered && answer1 === answer2;
-
-  if (bothAnswered) {
-    session.totalAnswered++;
-    if (matched) {
-      session.totalMatches++;
-      session.streak++;
-      session.bestStreak = Math.max(session.bestStreak, session.streak);
-    } else {
-      session.streak = 0;
+  if (isMatch) {
+    session.streak++;
+    session.totalMatches++;
+    if (session.streak > session.bestStreak) {
+      session.bestStreak = session.streak;
     }
+  } else {
+    session.streak = 0;
   }
-
-  const question = session.questions[session.currentRound];
-  const result = {
-    questionId: question.id,
-    answers: {
-      [p1?.id]: answer1,
-      [p2?.id]: answer2,
-    },
-    matched,
-    bothAnswered,
-  };
-  session.results.push(result);
 
   const syncPercent = session.totalAnswered > 0
     ? Math.round((session.totalMatches / session.totalAnswered) * 100)
     : 0;
 
-  const isLastRound = session.currentRound >= session.totalRounds - 1;
-
-  emitToRoom(io, room, 'sync-or-not:reveal', {
+  const currentQuestion = session.questions[session.currentRound];
+  const roundResult = {
     round: session.currentRound,
-    answers: {
-      [p1?.id]: { answer: answer1, name: p1?.name },
-      [p2?.id]: { answer: answer2, name: p2?.name },
-    },
-    question: { optionA: question.optionA, optionB: question.optionB },
-    matched,
-    bothAnswered,
+    question: currentQuestion,
+    answers: session.answers,
+    matched: isMatch,
     streak: session.streak,
+    bestStreak: session.bestStreak,
+    totalMatches: session.totalMatches,
+    totalRounds: session.totalRounds,
     syncPercent,
-    isLastRound,
-  });
+    isLastRound: session.currentRound >= session.totalRounds - 1,
+  };
 
-  // If last round, end the session
-  if (isLastRound) {
-    endSession(io, roomCode);
+  session.results.push(roundResult);
+
+  emitToRoom(io, room, 'sync-or-not:reveal', roundResult);
+
+  if (roundResult.isLastRound) {
+    setTimeout(() => {
+      endSession(io, roomCode);
+    }, 4000);
   }
 }
 
@@ -278,13 +390,21 @@ function advanceRound(io, roomCode) {
   if (!session) return;
 
   session.currentRound++;
-  session.answers = {};
-  session.phase = 'question';
 
   if (session.currentRound >= session.totalRounds) {
     endSession(io, roomCode);
-    return;
+  } else {
+    startRound(io, roomCode);
   }
+}
+
+function startRound(io, roomCode) {
+  const session = sessions.get(roomCode);
+  if (!session) return;
+
+  session.phase = 'question';
+  session.answers = {};
+  session.readyForNext = new Set();
 
   const room = roomManager.getRoom(roomCode);
   if (!room) return;
@@ -316,6 +436,7 @@ async function endSession(io, roomCode) {
     ? Math.round((session.totalMatches / session.totalAnswered) * 100)
     : 0;
 
+  const analytics = computePsychologicalProfile(session.results);
   const room = roomManager.getRoom(roomCode);
 
   // Persist stats
@@ -347,10 +468,10 @@ async function endSession(io, roomCode) {
       bestStreak: session.bestStreak,
       streak: session.streak,
       results: session.results,
+      analytics,
     });
   }
 
-  // Clean up the session (but don't clear activeGame — let client navigate away)
   if (session.timer) clearTimeout(session.timer);
   sessions.delete(roomCode);
 }
@@ -359,7 +480,7 @@ async function endSession(io, roomCode) {
 
 function emitToRoom(io, room, event, data) {
   for (const player of room.players) {
-    if (player.connected) {
+    if (player.connected && player.socketId) {
       io.to(player.socketId).emit(event, data);
     }
   }

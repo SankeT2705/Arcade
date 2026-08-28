@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warm off-white & clean slate surfaces
+        // Warm off-white & clean surfaces
         surface: {
           50: '#FFFFFF',
           100: '#FAF9F6',
@@ -32,19 +32,31 @@ export default {
           900: '#312E81',
           950: '#1E1B4B',
         },
-        // Harmonious Contextual Pastels
+        // Luminous Contextual Pastels: Gold, Sky Blue, Pink, Mint, Lavender
         pastel: {
+          gold: {
+            bg: '#FEF9C3',
+            border: '#FDE047',
+            text: '#854D0E',
+            accent: '#EAB308',
+          },
+          sky: {
+            bg: '#F0F9FF',
+            border: '#BAE6FD',
+            text: '#0369A1',
+            accent: '#0EA5E9',
+          },
+          pink: {
+            bg: '#FDF2F8',
+            border: '#FBCFE8',
+            text: '#9D174D',
+            accent: '#EC4899',
+          },
           mint: {
             bg: '#ECFDF5',
             border: '#A7F3D0',
             text: '#065F46',
             accent: '#10B981',
-          },
-          sky: {
-            bg: '#F0F9FF',
-            border: '#BAE6FD',
-            text: '#075985',
-            accent: '#0284C7',
           },
           lavender: {
             bg: '#F5F3FF',
@@ -64,14 +76,7 @@ export default {
             text: '#92400E',
             accent: '#F59E0B',
           },
-          coral: {
-            bg: '#FFF7ED',
-            border: '#FED7AA',
-            text: '#9A3412',
-            accent: '#EA580C',
-          },
         },
-        // Player identity dual-tone colors
         playerA: {
           bg: '#EEF2FF',
           border: '#C7D2FE',
@@ -79,10 +84,10 @@ export default {
           text: '#3730A3',
         },
         playerB: {
-          bg: '#FFF1F2',
-          border: '#FECDD3',
-          accent: '#F43F5E',
-          text: '#9F1239',
+          bg: '#FDF2F8',
+          border: '#FBCFE8',
+          accent: '#EC4899',
+          text: '#9D174D',
         },
         success: {
           50: '#ECFDF5',
@@ -106,9 +111,11 @@ export default {
       boxShadow: {
         soft: '0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
         card: '0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02)',
-        'card-hover': '0 20px 40px -8px rgba(99, 102, 241, 0.09), 0 6px 16px -4px rgba(0, 0, 0, 0.04)',
+        'card-hover': '0 20px 40px -8px rgba(99, 102, 241, 0.12), 0 6px 16px -4px rgba(0, 0, 0, 0.04)',
         modal: '0 25px 60px -15px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(226, 232, 240, 0.8)',
         glow: '0 0 25px -4px rgba(99, 102, 241, 0.35)',
+        'glow-gold': '0 0 25px -4px rgba(245, 158, 11, 0.35)',
+        'glow-pink': '0 0 25px -4px rgba(236, 72, 153, 0.35)',
       },
     },
   },
