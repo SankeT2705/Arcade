@@ -7,7 +7,7 @@ import db from '../../db/queries.js';
  *
  * Manages drawing sessions: role assignment, word selection,
  * stroke relaying, guess checking with typo tolerance, scoring,
- * and round management.
+ * progressive letter hints, and round management.
  */
 
 const DEFAULT_ROUNDS = 6;
@@ -16,6 +16,72 @@ const MAX_POINTS_PER_ROUND = 1000;
 
 // Active game sessions keyed by room code
 const sessions = new Map();
+
+/**
+ * Generate initial hint pattern based on word length.
+ * e.g., for length 3 => 0 letters revealed,
+ * for length 4..5 => 1 letter revealed,
+ * for length >= 6 => 2 letters revealed.
+ */
+function generateInitialHint(word) {
+  const len = word.length;
+  const chars = word.split('');
+  const hint = new Array(len).fill(null);
+
+  for (let i = 0; i < len; i++) {
+    if (chars[i] === ' ' || chars[i] === '-') {
+      hint[i] = chars[i];
+    }
+  }
+
+  const validIndices = [];
+  for (let i = 0; i < len; i++) {
+    if (hint[i] === null) validIndices.push(i);
+  }
+
+  let initialCount = 0;
+  if (len <= 3) {
+    initialCount = 0;
+  } else if (len <= 5) {
+    initialCount = 1;
+  } else {
+    initialCount = 2;
+  }
+
+  // Shuffle and pick indices to reveal initially
+  const shuffled = [...validIndices].sort(() => 0.5 - Math.random());
+  for (let i = 0; i < Math.min(initialCount, shuffled.length); i++) {
+    const idx = shuffled[i];
+    hint[idx] = chars[idx].toUpperCase();
+  }
+
+  return hint;
+}
+
+/**
+ * Reveal one additional unrevealed letter as time progresses.
+ */
+function revealAdditionalLetter(word, currentHint) {
+  const len = word.length;
+  const chars = word.split('');
+  const unrevealedIndices = [];
+
+  for (let i = 0; i < len; i++) {
+    if (currentHint[i] === null || currentHint[i] === '_') {
+      unrevealedIndices.push(i);
+    }
+  }
+
+  // Ensure at least 1 letter remains hidden for guessing
+  if (unrevealedIndices.length > 1) {
+    const randomIdx = unrevealedIndices[Math.floor(Math.random() * unrevealedIndices.length)];
+    const newHint = [...currentHint];
+    newHint[randomIdx] = chars[randomIdx].toUpperCase();
+    return newHint;
+  }
+
+  return currentHint;
+}
 
 /**
  * Register Scribble Duel event handlers on a socket.
@@ -36,8 +102,11 @@ export function registerHandlers(io, socket) {
  */
 export function cleanup(roomCode) {
   const session = sessions.get(roomCode);
-  if (session?.timer) {
-    clearTimeout(session.timer);
+  if (session) {
+    if (session.timer) clearTimeout(session.timer);
+    if (session.hintTimers && Array.isArray(session.hintTimers)) {
+      session.hintTimers.forEach(clearTimeout);
+    }
   }
   sessions.delete(roomCode);
 }
@@ -58,9 +127,10 @@ export function getSessionState(roomCode) {
     phase: session.phase,
     drawerId: session.drawerId,
     guesserId: session.guesserId,
-    word: session.word, // Only send to drawer on reconnect
+    word: session.word,
+    hintPattern: session.hintPattern,
     scores: session.scores,
-    strokes: session.strokes, // For canvas replay on reconnect
+    strokes: session.strokes,
     guesses: session.guesses,
     roundStartTime: session.roundStartTime,
     results: session.results,
@@ -103,10 +173,11 @@ function handleStart(io, socket, data) {
     words,
     totalRounds,
     currentRound: 0,
-    phase: 'drawing', // 'drawing' | 'round-end' | 'ended'
+    phase: 'drawing',
     drawerId: players[firstDrawerIndex].id,
     guesserId: players[1 - firstDrawerIndex].id,
     word: words[0].word,
+    hintPattern: [],
     scores: {
       [players[0].id]: 0,
       [players[1].id]: 0,
@@ -115,9 +186,10 @@ function handleStart(io, socket, data) {
       [players[0].id]: players[0].name,
       [players[1].id]: players[1].name,
     },
-    strokes: [], // accumulated strokes for canvas replay
-    guesses: [], // guess history for this round
+    strokes: [],
+    guesses: [],
     timer: null,
+    hintTimers: [],
     roundStartTime: Date.now(),
     results: [],
   };
@@ -141,11 +213,9 @@ function handleStroke(io, socket, data) {
 
   const player = room.players.find((p) => p.socketId === socket.id);
   if (!player || player.id !== session.drawerId) {
-    // Only the drawer can send strokes
     return;
   }
 
-  // Validate based on action type
   const type = stroke.type || 'stroke';
   let strokeData;
 
@@ -162,8 +232,8 @@ function handleStroke(io, socket, data) {
       type,
       x: stroke.x,
       y: stroke.y,
-      color: typeof stroke.color === 'string' ? stroke.color : '#000000',
-      width: typeof stroke.width === 'number' ? Math.min(Math.max(stroke.width, 1), 50) : 3,
+      color: typeof stroke.color === 'string' ? stroke.color : '#0F172A',
+      width: typeof stroke.width === 'number' ? Math.min(Math.max(stroke.width, 1), 50) : 4,
       isNewStroke: !!stroke.isNewStroke,
     };
   } else if (type === 'shape') {
@@ -183,8 +253,8 @@ function handleStroke(io, socket, data) {
       y1: stroke.y1,
       x2: stroke.x2,
       y2: stroke.y2,
-      color: typeof stroke.color === 'string' ? stroke.color : '#000000',
-      width: typeof stroke.width === 'number' ? Math.min(Math.max(stroke.width, 1), 50) : 3,
+      color: typeof stroke.color === 'string' ? stroke.color : '#0F172A',
+      width: typeof stroke.width === 'number' ? Math.min(Math.max(stroke.width, 1), 50) : 4,
     };
   } else {
     return;
@@ -192,7 +262,6 @@ function handleStroke(io, socket, data) {
 
   session.strokes.push(strokeData);
 
-  // Relay to guesser
   const guesser = room.players.find((p) => p.id === session.guesserId);
   if (guesser?.connected) {
     io.to(guesser.socketId).emit('scribble-duel:stroke', { stroke: strokeData });
@@ -213,7 +282,6 @@ function handleClear(io, socket, data) {
 
   session.strokes = [];
 
-  // Relay to guesser
   const guesser = room.players.find((p) => p.id === session.guesserId);
   if (guesser?.connected) {
     io.to(guesser.socketId).emit('scribble-duel:clear', {});
@@ -261,20 +329,17 @@ function handleGuess(io, socket, data) {
 
   session.guesses.push(guessResult);
 
-  // Emit to both players
   emitToRoom(io, room, 'scribble-duel:guess-result', {
     guess: guessResult,
   });
 
   if (isCorrect) {
-    // Calculate points based on time remaining
     const elapsed = Date.now() - session.roundStartTime;
     const timeRatio = Math.max(0, 1 - elapsed / ROUND_TIMER_MS);
     const points = Math.round(MAX_POINTS_PER_ROUND * timeRatio);
 
-    // Award points to both drawer and guesser
     session.scores[session.guesserId] += points;
-    session.scores[session.drawerId] += Math.round(points * 0.5); // drawer gets half
+    session.scores[session.drawerId] += Math.round(points * 0.5);
 
     endRound(io, roomCode, true, points);
   }
@@ -298,18 +363,25 @@ function startRound(io, roomCode) {
   session.strokes = [];
   session.guesses = [];
   session.word = session.words[session.currentRound].word;
+  session.hintPattern = generateInitialHint(session.word);
   session.roundStartTime = Date.now();
+
+  if (session.hintTimers && Array.isArray(session.hintTimers)) {
+    session.hintTimers.forEach(clearTimeout);
+  }
+  session.hintTimers = [];
 
   const drawer = room.players.find((p) => p.id === session.drawerId);
   const guesser = room.players.find((p) => p.id === session.guesserId);
 
-  // Send word to drawer only
+  // Send word & initial hint to drawer
   if (drawer?.connected) {
     io.to(drawer.socketId).emit('scribble-duel:round-start', {
       round: session.currentRound,
       totalRounds: session.totalRounds,
       role: 'drawer',
       word: session.word,
+      hintPattern: session.hintPattern,
       wordLength: session.word.length,
       timeLimit: ROUND_TIMER_MS,
       scores: session.scores,
@@ -317,13 +389,14 @@ function startRound(io, roomCode) {
     });
   }
 
-  // Send round info to guesser (without the word)
+  // Send initial hint to guesser
   if (guesser?.connected) {
     io.to(guesser.socketId).emit('scribble-duel:round-start', {
       round: session.currentRound,
       totalRounds: session.totalRounds,
       role: 'guesser',
       word: null,
+      hintPattern: session.hintPattern,
       wordLength: session.word.length,
       timeLimit: ROUND_TIMER_MS,
       scores: session.scores,
@@ -331,7 +404,31 @@ function startRound(io, roomCode) {
     });
   }
 
-  // Start round timer
+  // Progressive Hint 1 (at t = 28 seconds): Reveal 1 more letter
+  session.hintTimers.push(
+    setTimeout(() => {
+      if (session.phase === 'drawing') {
+        session.hintPattern = revealAdditionalLetter(session.word, session.hintPattern);
+        emitToRoom(io, room, 'scribble-duel:hint-update', {
+          hintPattern: session.hintPattern,
+        });
+      }
+    }, 28000)
+  );
+
+  // Progressive Hint 2 (at t = 56 seconds): Reveal 1 more letter
+  session.hintTimers.push(
+    setTimeout(() => {
+      if (session.phase === 'drawing') {
+        session.hintPattern = revealAdditionalLetter(session.word, session.hintPattern);
+        emitToRoom(io, room, 'scribble-duel:hint-update', {
+          hintPattern: session.hintPattern,
+        });
+      }
+    }, 56000)
+  );
+
+  // Start round timer (90s)
   session.timer = setTimeout(() => {
     session.timer = null;
     endRound(io, roomCode, false, 0);
@@ -347,6 +444,11 @@ function endRound(io, roomCode, guessedCorrectly, points) {
   if (session.timer) {
     clearTimeout(session.timer);
     session.timer = null;
+  }
+
+  if (session.hintTimers && Array.isArray(session.hintTimers)) {
+    session.hintTimers.forEach(clearTimeout);
+    session.hintTimers = [];
   }
 
   const room = roomManager.getRoom(roomCode);
@@ -377,13 +479,10 @@ function endRound(io, roomCode, guessedCorrectly, points) {
   });
 
   if (isLastRound) {
-    // End session after a brief delay
     setTimeout(() => endSession(io, roomCode), 2000);
   } else {
-    // Advance to next round after delay
     setTimeout(() => {
       session.currentRound++;
-      // Swap roles
       const temp = session.drawerId;
       session.drawerId = session.guesserId;
       session.guesserId = temp;
@@ -399,48 +498,46 @@ async function endSession(io, roomCode) {
   session.phase = 'ended';
 
   const room = roomManager.getRoom(roomCode);
+  if (!room) return;
 
-  // Determine winner
+  let winnerId = null;
   const playerIds = Object.keys(session.scores);
-  const winnerId =
-    session.scores[playerIds[0]] > session.scores[playerIds[1]]
-      ? playerIds[0]
-      : session.scores[playerIds[1]] > session.scores[playerIds[0]]
-        ? playerIds[1]
-        : null; // tie
+  if (playerIds.length === 2) {
+    const [p1, p2] = playerIds;
+    if (session.scores[p1] > session.scores[p2]) {
+      winnerId = p1;
+    } else if (session.scores[p2] > session.scores[p1]) {
+      winnerId = p2;
+    }
+  }
 
-  // Persist
+  const endData = {
+    scores: session.scores,
+    playerNames: session.playerNames,
+    winnerId,
+    totalRounds: session.totalRounds,
+    results: session.results,
+  };
+
+  emitToRoom(io, room, 'scribble-duel:end', endData);
+
   try {
-    await db.saveGameSession({
+    await db.saveMatch({
       roomCode,
       gameId: 'scribble-duel',
-      totalRounds: session.totalRounds,
-      scores: session.scores,
       winnerId,
+      scores: session.scores,
       results: session.results,
     });
   } catch (err) {
-    console.error('[Scribble Duel] Failed to persist session:', err);
+    console.error('[ScribbleDuel] Failed to persist match:', err.message);
   }
-
-  if (room) {
-    emitToRoom(io, room, 'scribble-duel:end', {
-      scores: session.scores,
-      playerNames: session.playerNames,
-      winnerId,
-      results: session.results,
-    });
-  }
-
-  cleanup(roomCode);
 }
 
-// ─── Helpers ───────────────────────────────────────────
-
 function emitToRoom(io, room, event, data) {
-  for (const player of room.players) {
-    if (player.connected) {
-      io.to(player.socketId).emit(event, data);
+  room.players.forEach((p) => {
+    if (p.connected && p.socketId) {
+      io.to(p.socketId).emit(event, data);
     }
-  }
+  });
 }

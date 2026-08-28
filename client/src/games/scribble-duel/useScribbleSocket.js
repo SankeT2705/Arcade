@@ -10,10 +10,11 @@ export default function useScribbleSocket(roomCode) {
   const [phase, setPhase] = useState('waiting'); // waiting | drawing | round-end | ended
   const [role, setRole] = useState(null); // 'drawer' | 'guesser'
   const [word, setWord] = useState(null);
+  const [hintPattern, setHintPattern] = useState([]);
   const [wordLength, setWordLength] = useState(0);
   const [round, setRound] = useState(0);
   const [totalRounds, setTotalRounds] = useState(6);
-  const [timeLimit, setTimeLimit] = useState(60000);
+  const [timeLimit, setTimeLimit] = useState(90000);
   const [scores, setScores] = useState({});
   const [playerNames, setPlayerNames] = useState({});
   const [guesses, setGuesses] = useState([]);
@@ -22,7 +23,7 @@ export default function useScribbleSocket(roomCode) {
   const [error, setError] = useState(null);
   const [timerRunning, setTimerRunning] = useState(false);
   const [incomingStroke, setIncomingStroke] = useState(null);
-  const [clearCanvas, setClearCanvas] = useState(0); // increment to trigger clear
+  const [clearCanvas, setClearCanvas] = useState(0);
 
   useEffect(() => {
     if (!socket) return;
@@ -31,6 +32,7 @@ export default function useScribbleSocket(roomCode) {
       setPhase('drawing');
       setRole(data.role);
       setWord(data.word);
+      setHintPattern(data.hintPattern || []);
       setWordLength(data.wordLength);
       setRound(data.round);
       setTotalRounds(data.totalRounds);
@@ -41,7 +43,11 @@ export default function useScribbleSocket(roomCode) {
       setRoundEndData(null);
       setTimerRunning(true);
       setError(null);
-      setClearCanvas((c) => c + 1); // clear canvas for new round
+      setClearCanvas((c) => c + 1);
+    };
+
+    const handleHintUpdate = ({ hintPattern: newHint }) => {
+      setHintPattern(newHint || []);
     };
 
     const handleStroke = (data) => {
@@ -74,6 +80,7 @@ export default function useScribbleSocket(roomCode) {
     };
 
     socket.on('scribble-duel:round-start', handleRoundStart);
+    socket.on('scribble-duel:hint-update', handleHintUpdate);
     socket.on('scribble-duel:stroke', handleStroke);
     socket.on('scribble-duel:clear', handleClear);
     socket.on('scribble-duel:guess-result', handleGuessResult);
@@ -83,6 +90,7 @@ export default function useScribbleSocket(roomCode) {
 
     return () => {
       socket.off('scribble-duel:round-start', handleRoundStart);
+      socket.off('scribble-duel:hint-update', handleHintUpdate);
       socket.off('scribble-duel:stroke', handleStroke);
       socket.off('scribble-duel:clear', handleClear);
       socket.off('scribble-duel:guess-result', handleGuessResult);
@@ -108,7 +116,6 @@ export default function useScribbleSocket(roomCode) {
 
   const sendClear = useCallback(() => {
     socket?.emit('scribble-duel:clear', { roomCode });
-    setClearCanvas((c) => c + 1);
   }, [socket, roomCode]);
 
   const submitGuess = useCallback(
@@ -120,10 +127,6 @@ export default function useScribbleSocket(roomCode) {
 
   const playAgain = useCallback(
     (rounds = 6) => {
-      setPhase('waiting');
-      setEndData(null);
-      setRoundEndData(null);
-      setGuesses([]);
       socket?.emit('scribble-duel:play-again', { roomCode, rounds });
     },
     [socket, roomCode],
@@ -133,6 +136,7 @@ export default function useScribbleSocket(roomCode) {
     phase,
     role,
     word,
+    hintPattern,
     wordLength,
     round,
     totalRounds,

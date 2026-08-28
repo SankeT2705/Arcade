@@ -26,6 +26,7 @@ export default function ScribbleDuel({ roomCode }) {
     phase,
     role,
     word,
+    hintPattern,
     wordLength,
     round,
     totalRounds,
@@ -219,6 +220,7 @@ export default function ScribbleDuel({ roomCode }) {
               /* Guesser View */
               <GuesserView
                 wordLength={wordLength}
+                hintPattern={hintPattern}
                 incomingStroke={incomingStroke}
                 clearSignal={clearCanvas}
                 guesses={guesses}
