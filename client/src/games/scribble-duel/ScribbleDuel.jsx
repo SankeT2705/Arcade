@@ -59,7 +59,7 @@ export default function ScribbleDuel({ roomCode }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8 pb-28">
       {/* Game Header Bar */}
       <div className="flex items-center justify-between gap-3 mb-4 bg-white p-3 sm:px-5 sm:py-3.5 rounded-2xl border border-surface-200 shadow-architect">
         <div className="flex items-center gap-3">

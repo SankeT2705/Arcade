@@ -164,7 +164,7 @@ export default function DrawingCanvas({
     }
   }, [clearSignal]);
 
-  // Execute drawing actions with bezier curve smoothing
+  // Execute drawing actions
   const executeAction = useCallback((ctx, canvas, action, isPreview = false) => {
     if (!ctx || !canvas) return;
     const rect = canvas.getBoundingClientRect();
@@ -172,11 +172,11 @@ export default function DrawingCanvas({
     if (action.type === 'fill' && !isPreview) {
       const px = Math.floor(action.x * canvas.width);
       const py = Math.floor(action.y * canvas.height);
-      floodFill(ctx, px, py, action.color || '#ffffff', canvas.width, canvas.height);
+      floodFill(ctx, px, py, action.color || '#0F172A', canvas.width, canvas.height);
       return;
     }
 
-    ctx.strokeStyle = action.color || '#ffffff';
+    ctx.strokeStyle = action.color || '#0F172A';
     ctx.lineWidth = action.width || 4;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -317,24 +317,27 @@ export default function DrawingCanvas({
     lastPoint.current = null;
   }, [isDrawer, activeTool, getCanvasCoords, color, brushWidth, executeAction, onStroke]);
 
-  // Touch Event Listeners (Non-passive to guarantee smooth mobile touch drawing without browser scroll)
+  // Touch Event Listeners: 1 finger draws; 2 fingers scroll the screen on tablets!
   useEffect(() => {
     const canvas = previewCanvasRef.current;
     if (!canvas || !isDrawer) return;
 
     const onTouchStart = (e) => {
+      if (e.touches.length > 1) return; // Allow 2-finger scroll on tablets!
       e.preventDefault();
       const touch = e.touches[0];
       if (touch) startDrawing(touch.clientX, touch.clientY);
     };
 
     const onTouchMove = (e) => {
+      if (e.touches.length > 1) return; // Allow 2-finger scroll on tablets!
       e.preventDefault();
       const touch = e.touches[0];
       if (touch) moveDrawing(touch.clientX, touch.clientY);
     };
 
     const onTouchEnd = (e) => {
+      if (e.touches.length > 1) return;
       e.preventDefault();
       const touch = e.changedTouches?.[0];
       endDrawing(touch?.clientX, touch?.clientY);
@@ -354,7 +357,7 @@ export default function DrawingCanvas({
   }, [isDrawer, startDrawing, moveDrawing, endDrawing]);
 
   return (
-    <div className={cn('relative w-full aspect-[4/3] rounded-2xl border border-surface-300 overflow-hidden shadow-sm bg-white', className)}>
+    <div className={cn('relative w-full aspect-[4/3] max-h-[55vh] rounded-2xl border border-surface-300 overflow-hidden shadow-sm bg-white', className)}>
       <canvas
         ref={mainCanvasRef}
         className="absolute inset-0 w-full h-full bg-white"
@@ -362,14 +365,14 @@ export default function DrawingCanvas({
       <canvas
         ref={previewCanvasRef}
         className={cn(
-          'absolute inset-0 w-full h-full touch-none select-none',
+          'absolute inset-0 w-full h-full select-none',
           isDrawer ? (activeTool === 'fill' ? 'cursor-pointer' : 'cursor-crosshair') : 'cursor-default pointer-events-none'
         )}
         onMouseDown={(e) => startDrawing(e.clientX, e.clientY)}
         onMouseMove={(e) => moveDrawing(e.clientX, e.clientY)}
         onMouseUp={(e) => endDrawing(e.clientX, e.clientY)}
         onMouseLeave={(e) => endDrawing(e.clientX, e.clientY)}
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: isDrawer ? 'none' : 'auto' }}
       />
     </div>
   );

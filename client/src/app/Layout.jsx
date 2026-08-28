@@ -44,8 +44,8 @@ export default function Layout() {
               <span className="font-heading font-extrabold text-base tracking-tight text-surface-950 block">
                 Duo<span className="text-primary-600">Arcade</span>
               </span>
-              <span className="text-[10px] text-surface-600 block -mt-1 font-medium tracking-wide uppercase">
-                2-Player Real-Time
+              <span className="text-[10px] text-surface-500 block -mt-1 font-medium tracking-wide">
+                2-Player Games
               </span>
             </div>
           </button>

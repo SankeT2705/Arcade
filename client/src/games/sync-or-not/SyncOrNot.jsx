@@ -40,7 +40,7 @@ export default function SyncOrNot({ roomCode }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-28">
       {/* Game Header Bar */}
       <div className="flex items-center justify-between mb-6 bg-white p-3.5 sm:px-5 sm:py-4 rounded-2xl border border-surface-200 shadow-architect">
         <div className="flex items-center gap-3">
