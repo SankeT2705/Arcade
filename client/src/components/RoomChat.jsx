@@ -64,7 +64,7 @@ export default function RoomChat() {
   if (!room) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -72,19 +72,19 @@ export default function RoomChat() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 12 }}
             transition={{ type: 'spring', damping: 26, stiffness: 380 }}
-            className="w-80 sm:w-96 h-[440px] bg-white rounded-2xl border border-surface-200 shadow-modal flex flex-col overflow-hidden mb-3"
+            className="w-80 sm:w-96 h-[440px] bg-white rounded-3xl border border-black/[0.06] shadow-modal flex flex-col overflow-hidden mb-3"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Chat Header */}
-            <div className="px-4 py-3 border-b border-surface-200 flex items-center justify-between bg-surface-50">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+            <div className="px-5 py-3.5 border-b border-black/[0.04] flex items-center justify-between bg-surface-100/60">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shadow-soft">
                   <MessageSquareIcon className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="text-xs font-heading font-bold text-surface-950 flex items-center gap-1.5">
                     Live Chat
-                    <span className="font-mono text-[10px] text-primary-700 bg-primary-50 px-1.5 py-0.2 rounded border border-primary-200">
+                    <span className="font-mono text-[10px] text-primary-700 bg-primary-50 px-2 py-0.5 rounded-md border border-primary-200">
                       {room.code}
                     </span>
                   </h3>
@@ -92,19 +92,19 @@ export default function RoomChat() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-surface-400 hover:text-surface-700 hover:bg-surface-200 transition-colors"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-surface-400 hover:text-surface-700 hover:bg-surface-200 transition-colors"
                 title="Close chat"
               >
-                <XIcon className="w-3.5 h-3.5" />
+                <XIcon className="w-4 h-4" />
               </button>
             </div>
 
             {/* Messages Feed */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar bg-surface-50/50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-surface-50/40">
               {chatMessages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-surface-400 text-xs px-4">
                   <MessageSquareIcon className="w-8 h-8 mb-2 text-surface-300" />
-                  <p>Send a message! Chat is live in lobby and during games.</p>
+                  <p>Send a message! Chat is live in lobby and during gameplay.</p>
                 </div>
               ) : (
                 chatMessages.map((msg) => {
@@ -122,10 +122,10 @@ export default function RoomChat() {
                       )}
                       <div
                         className={cn(
-                          'max-w-[78%] rounded-2xl px-3.5 py-2 leading-relaxed break-words shadow-xs',
+                          'max-w-[78%] rounded-2xl px-3.5 py-2 leading-relaxed break-words shadow-soft',
                           isMe
                             ? 'bg-primary-600 text-white rounded-br-none'
-                            : 'bg-white text-surface-900 border border-surface-200 rounded-bl-none',
+                            : 'bg-white text-surface-900 border border-black/[0.06] rounded-bl-none',
                         )}
                       >
                         {!isMe && (
@@ -154,13 +154,13 @@ export default function RoomChat() {
             </div>
 
             {/* Quick Emoji Bar */}
-            <div className="px-3 py-1.5 border-t border-surface-200 flex items-center gap-2 overflow-x-auto no-scrollbar bg-white">
+            <div className="px-3 py-1.5 border-t border-black/[0.04] flex items-center gap-2 overflow-x-auto no-scrollbar bg-white">
               {QUICK_EMOJIS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
                   onClick={() => handleEmojiClick(emoji)}
-                  className="hover:scale-120 active:scale-95 transition-transform p-1 text-sm shrink-0"
+                  className="hover:scale-125 active:scale-95 transition-transform p-1 text-sm shrink-0"
                 >
                   {emoji}
                 </button>
@@ -170,7 +170,7 @@ export default function RoomChat() {
             {/* Chat Input */}
             <form
               onSubmit={handleSend}
-              className="p-2.5 border-t border-surface-200 bg-white flex items-center gap-2"
+              className="p-3 border-t border-black/[0.04] bg-white flex items-center gap-2"
             >
               <input
                 type="text"
@@ -178,12 +178,12 @@ export default function RoomChat() {
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Message your friend…"
                 maxLength={300}
-                className="input-base !py-1.5 !px-3 text-xs"
+                className="input-base !py-2 !px-3.5 text-xs rounded-xl"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="btn-primary !p-2 !rounded-xl text-xs font-semibold shrink-0"
+                className="btn-primary !p-2.5 !rounded-xl text-xs font-semibold shrink-0"
                 title="Send"
               >
                 <SendIcon className="w-3.5 h-3.5" />
@@ -198,13 +198,13 @@ export default function RoomChat() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative bg-white hover:bg-surface-50 text-surface-800 p-3 rounded-2xl border border-surface-300 shadow-modal flex items-center justify-center transition-all group"
+        className="relative bg-white hover:bg-surface-50 text-surface-800 p-3.5 rounded-2xl border border-black/[0.08] shadow-modal flex items-center justify-center transition-all group"
         title="Open chat"
       >
         <MessageSquareIcon className="w-5 h-5 text-primary-600" />
-        
+
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-xs">
+          <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-soft">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}

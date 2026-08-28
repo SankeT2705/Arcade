@@ -11,11 +11,11 @@ export default function Card({
   if (interactive) {
     return (
       <motion.div
-        whileHover={{ y: -2, scale: 1.004 }}
+        whileHover={{ y: -3, scale: 1.006 }}
         whileTap={{ scale: 0.985 }}
-        transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+        transition={{ type: 'spring', damping: 22, stiffness: 380 }}
         className={cn(
-          'glass-card p-6 cursor-pointer hover:border-primary-400 hover:shadow-card-hover transition-all duration-150',
+          'card-interactive p-6 md:p-8',
           className,
         )}
         onClick={onClick}
@@ -30,7 +30,7 @@ export default function Card({
   }
 
   return (
-    <div className={cn('glass-card p-6', className)} {...props}>
+    <div className={cn('card-surface p-6 md:p-8', className)} {...props}>
       {children}
     </div>
   );

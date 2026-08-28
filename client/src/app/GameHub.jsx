@@ -7,6 +7,7 @@ import { games } from '../games/gameRegistry';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import Modal from '../components/Modal';
+import Avatar from '../components/Avatar';
 import {
   PlusIcon,
   LinkIcon,
@@ -14,6 +15,9 @@ import {
   CompassIcon,
   GamepadIcon,
   UsersIcon,
+  SparklesIcon,
+  ZapIcon,
+  CheckIcon,
 } from '../components/Icons';
 import { getPlayerName, generateDefaultName, getPlayerName as savePlayerName } from '../lib/utils';
 
@@ -21,7 +25,7 @@ const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.06 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
@@ -31,9 +35,9 @@ const item = {
 };
 
 function renderGameIcon(iconKey) {
-  if (iconKey === 'brush') return <BrushIcon className="w-5 h-5 text-primary-600" />;
-  if (iconKey === 'compass') return <CompassIcon className="w-5 h-5 text-secondary-600" />;
-  return <GamepadIcon className="w-5 h-5 text-primary-600" />;
+  if (iconKey === 'brush') return <BrushIcon className="w-6 h-6 text-primary-600" />;
+  if (iconKey === 'compass') return <CompassIcon className="w-6 h-6 text-emerald-600" />;
+  return <GamepadIcon className="w-6 h-6 text-primary-600" />;
 }
 
 export default function GameHub() {
@@ -67,60 +71,156 @@ export default function GameHub() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-      {/* Hero Section */}
-      <div className="text-center mb-10 sm:mb-14">
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className="text-4xl sm:text-5xl font-heading font-extrabold tracking-tight text-surface-950 mb-3"
-        >
-          Duo Arcade
-        </motion.h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+      {/* ─── Hero Section (Split Layout) ────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-16 sm:mb-20">
+        {/* Left Column: Headlines & Actions */}
+        <div className="lg:col-span-7 text-left space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-50 border border-primary-200/80 text-primary-700 text-xs font-semibold tracking-wide shadow-soft"
+          >
+            <SparklesIcon className="w-3.5 h-3.5 text-primary-600" />
+            <span>2-Player Real-Time Friendship Games</span>
+          </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.1 }}
-          className="text-surface-600 text-sm sm:text-base max-w-sm mx-auto leading-relaxed"
-        >
-          Create a room, share the code with a friend, and start playing.
-        </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.06 }}
+            className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-surface-950 leading-[1.12]"
+          >
+            Play Together. <br />
+            <span className="text-primary-600">Stay In Sync.</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.12 }}
+            className="text-surface-600 text-base sm:text-lg max-w-lg leading-relaxed font-normal"
+          >
+            Create a room, invite a friend, and discover how well your choices match through live interactive games.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.18 }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2"
+          >
+            <button
+              onClick={() => setShowCreateModal(true)}
+              disabled={!isConnected}
+              className="btn-primary py-3.5 px-7 text-sm font-heading font-bold"
+            >
+              <PlusIcon className="w-4 h-4" />
+              <span>Create Room</span>
+            </button>
+
+            <button
+              onClick={() => setShowJoinModal(true)}
+              disabled={!isConnected}
+              className="btn-secondary py-3.5 px-7 text-sm font-heading font-bold"
+            >
+              <LinkIcon className="w-4 h-4 text-surface-500" />
+              <span>Join Room</span>
+            </button>
+          </motion.div>
+        </div>
+
+        {/* Right Column: Product-Native Interactive Visual */}
+        <div className="lg:col-span-5 relative flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="w-full max-w-md bg-white border border-black/[0.06] rounded-3xl p-6 shadow-card relative overflow-hidden"
+          >
+            {/* Ambient inner gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-50/40 via-transparent to-rose-50/40 pointer-events-none" />
+
+            {/* Room Header Pill */}
+            <div className="flex items-center justify-between mb-6 relative z-10">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-semibold text-surface-600 uppercase tracking-wider">
+                  Live Match Room
+                </span>
+              </div>
+              <span className="text-[11px] font-mono font-bold text-primary-700 bg-primary-50 border border-primary-200 px-2.5 py-0.5 rounded-full">
+                #SYNC-ROOM
+              </span>
+            </div>
+
+            {/* Two Players Connected by Live Sync Beam */}
+            <div className="flex items-center justify-between relative z-10 mb-6 py-2">
+              {/* Player 1 Card */}
+              <div className="flex flex-col items-center gap-1.5">
+                <Avatar name="Alex" role="playerA" size="lg" connected={true} />
+                <span className="text-xs font-heading font-bold text-surface-900">Alex</span>
+                <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  Host
+                </span>
+              </div>
+
+              {/* Animated Sync Beam Line */}
+              <div className="flex-1 flex flex-col items-center justify-center px-3 relative">
+                <div className="w-full h-0.5 bg-gradient-to-r from-primary-400 via-emerald-400 to-rose-400 rounded-full relative overflow-hidden">
+                  <motion.div
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+                    className="w-8 h-full bg-white shadow-glow"
+                  />
+                </div>
+                <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full shadow-soft">
+                  <ZapIcon className="w-3 h-3 text-emerald-500" />
+                  <span>90% Sync</span>
+                </div>
+              </div>
+
+              {/* Player 2 Card */}
+              <div className="flex flex-col items-center gap-1.5">
+                <Avatar name="Sam" role="playerB" size="lg" connected={true} />
+                <span className="text-xs font-heading font-bold text-surface-900">Sam</span>
+                <span className="text-[10px] text-rose-700 font-semibold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                  Guest
+                </span>
+              </div>
+            </div>
+
+            {/* Floating Choice Chips */}
+            <div className="space-y-2 relative z-10">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-surface-50 border border-black/[0.04] shadow-soft">
+                <span className="text-xs font-medium text-surface-700">Would you rather...</span>
+                <span className="text-[10px] font-bold text-primary-700 uppercase tracking-wider bg-white px-2 py-0.5 rounded-md border border-black/[0.04]">
+                  Food
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-center text-xs font-heading font-bold">
+                <div className="p-2.5 rounded-xl bg-primary-50 border border-primary-200 text-primary-800 flex items-center justify-center gap-1.5">
+                  <CheckIcon className="w-3.5 h-3.5 text-primary-600" />
+                  <span>Paneer Tikka</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center justify-center gap-1.5">
+                  <CheckIcon className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Paneer Tikka</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
-
-      {/* Main Action Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.15 }}
-        className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 max-w-md mx-auto"
-      >
-        <button
-          onClick={() => setShowCreateModal(true)}
-          disabled={!isConnected}
-          className="btn-primary w-full sm:w-1/2 py-3 text-sm font-heading font-bold"
-        >
-          <PlusIcon className="w-4 h-4" />
-          <span>Create Room</span>
-        </button>
-
-        <button
-          onClick={() => setShowJoinModal(true)}
-          disabled={!isConnected}
-          className="btn-secondary w-full sm:w-1/2 py-3 text-sm font-heading font-bold"
-        >
-          <LinkIcon className="w-4 h-4 text-surface-500" />
-          <span>Join Room</span>
-        </button>
-      </motion.div>
 
       {/* Error Alert */}
       {error && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md mx-auto mb-8 p-3.5 rounded-xl bg-danger-50 border border-danger-200 text-danger-700 text-sm flex items-center justify-between shadow-xs"
+          className="max-w-md mx-auto mb-8 p-4 rounded-2xl bg-danger-50 border border-danger-200 text-danger-700 text-sm flex items-center justify-between shadow-soft"
         >
           <span>{error}</span>
           <button
@@ -132,14 +232,19 @@ export default function GameHub() {
         </motion.div>
       )}
 
-      {/* Games Showcase Grid */}
-      <div className="mb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-heading font-bold text-surface-950 tracking-tight">
-            Available Games
-          </h2>
-          <span className="text-xs text-surface-500 font-medium">
-            2 Players
+      {/* ─── Featured Games Section ────────────────────────── */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-heading font-bold text-surface-950 tracking-tight">
+              Featured Games
+            </h2>
+            <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
+              Pick any game once both players are inside the room
+            </p>
+          </div>
+          <span className="text-xs text-surface-600 bg-white px-3 py-1.5 rounded-xl border border-black/[0.06] font-medium shadow-soft">
+            2 Games Available
           </span>
         </div>
 
@@ -147,32 +252,39 @@ export default function GameHub() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
         >
           {games.map((game) => (
             <motion.div key={game.id} variants={item}>
-              <Card className="h-full relative overflow-hidden group hover:border-primary-400 transition-all">
-                <div className="flex items-start gap-3.5">
-                  {/* Clean SVG Vector Icon Tile */}
-                  <div className="w-11 h-11 rounded-xl bg-surface-100 border border-surface-200 flex items-center justify-center shrink-0 group-hover:bg-primary-50 group-hover:border-primary-200 transition-colors shadow-xs">
+              <Card className="h-full relative overflow-hidden group hover:border-primary-300 hover:shadow-card-hover transition-all p-6 sm:p-7">
+                <div className="flex items-start gap-4">
+                  {/* Icon Tile */}
+                  <div className="w-14 h-14 rounded-2xl bg-surface-100 border border-black/[0.04] flex items-center justify-center shrink-0 group-hover:bg-primary-50 group-hover:border-primary-200 transition-colors shadow-soft">
                     {renderGameIcon(game.icon)}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="text-base font-heading font-bold text-surface-950 tracking-tight group-hover:text-primary-700 transition-colors">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <h3 className="text-lg font-heading font-bold text-surface-950 tracking-tight group-hover:text-primary-700 transition-colors">
                         {game.name}
                       </h3>
-                      <span className="text-[11px] font-semibold text-surface-600 bg-surface-100 border border-surface-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                      <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-soft">
                         <UsersIcon className="w-3 h-3" />
-                        2P
+                        2 Players
                       </span>
                     </div>
 
-                    <p className="text-surface-600 text-xs leading-relaxed">
+                    <p className="text-surface-600 text-xs sm:text-sm leading-relaxed mb-4">
                       {game.description}
                     </p>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-surface-600 bg-surface-100 px-2.5 py-1 rounded-xl border border-black/[0.04] flex items-center gap-1.5 font-medium">
+                        <ZapIcon className="w-3 h-3 text-amber-500" />
+                        Live Synchronized
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -208,9 +320,9 @@ export default function GameHub() {
             onClick={handleCreate}
             loading={isLoading}
             disabled={!playerName.trim()}
-            className="w-full py-3 text-sm font-heading font-bold"
+            className="w-full py-3.5 text-sm font-heading font-bold rounded-2xl"
           >
-            Create
+            Create Room
           </Button>
         </div>
       </Modal>
@@ -224,7 +336,7 @@ export default function GameHub() {
         }}
         title="Join Room"
       >
-        <div className="space-y-3.5">
+        <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-surface-700 uppercase tracking-wider mb-1.5">
               Player Name
@@ -247,7 +359,7 @@ export default function GameHub() {
               type="text"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-              className="input-base font-mono tracking-widest text-center text-lg uppercase font-bold text-primary-700"
+              className="input-base font-mono tracking-widest text-center text-xl uppercase font-extrabold text-primary-700"
               placeholder="ABC123"
               maxLength={6}
               onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
@@ -258,9 +370,9 @@ export default function GameHub() {
             onClick={handleJoin}
             loading={isLoading}
             disabled={!playerName.trim() || !joinCode.trim()}
-            className="w-full py-3 text-sm font-heading font-bold mt-1"
+            className="w-full py-3.5 text-sm font-heading font-bold rounded-2xl mt-1"
           >
-            Join
+            Enter Room
           </Button>
         </div>
       </Modal>

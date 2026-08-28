@@ -62,19 +62,19 @@ export default function ScribbleDuel({ roomCode }) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8 pb-28">
       {/* Game Header Bar */}
-      <div className="flex items-center justify-between gap-3 mb-4 bg-white p-3 sm:px-5 sm:py-3.5 rounded-2xl border border-surface-200 shadow-architect">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center text-lg shadow-xs">
-            <BrushIcon className="w-4 h-4" />
+      <div className="flex items-center justify-between gap-3 mb-5 bg-white p-3.5 sm:px-6 sm:py-4 rounded-3xl border border-black/[0.06] shadow-card">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center shadow-soft">
+            <BrushIcon className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm sm:text-base font-heading font-bold text-surface-950 leading-tight">
+            <h2 className="text-base sm:text-lg font-heading font-extrabold text-surface-950 leading-tight">
               Scribble Duel
             </h2>
             {(phase === 'drawing' || phase === 'round-end') && (
-              <p className="text-[11px] text-surface-500">
+              <p className="text-xs text-surface-500 font-medium mt-0.5">
                 Round {round + 1} of {totalRounds} •{' '}
-                <span className={role === 'drawer' ? 'text-primary-700 font-bold' : 'text-secondary-700 font-bold'}>
+                <span className={role === 'drawer' ? 'text-primary-700 font-bold' : 'text-rose-700 font-bold'}>
                   {role === 'drawer' ? 'You are Drawing' : 'You are Guessing'}
                 </span>
               </p>
@@ -85,13 +85,13 @@ export default function ScribbleDuel({ roomCode }) {
         <div className="flex items-center gap-4">
           {/* Live Score Badges */}
           {phase !== 'waiting' && phase !== 'ended' && (
-            <div className="flex items-center gap-2 bg-surface-100 px-3 py-1.5 rounded-xl border border-surface-200 text-xs">
+            <div className="flex items-center gap-2 bg-surface-100 px-3.5 py-1.5 rounded-2xl border border-black/[0.04] text-xs shadow-soft">
               {Object.entries(scores).map(([pid, score]) => (
                 <div key={pid} className="flex items-center gap-1.5">
-                  <span className="text-surface-500 truncate max-w-[70px]">
+                  <span className="text-surface-500 font-medium truncate max-w-[70px]">
                     {pid === playerId ? 'You' : playerNames[pid]?.split(' ')[0]}:
                   </span>
-                  <span className="font-mono font-bold text-surface-950">{score}</span>
+                  <span className="font-mono font-black text-surface-950">{score}</span>
                 </div>
               ))}
             </div>
@@ -109,7 +109,7 @@ export default function ScribbleDuel({ roomCode }) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mb-4 p-3 rounded-xl bg-danger-50 border border-danger-200 text-danger-700 text-xs text-center"
+          className="mb-4 p-4 rounded-2xl bg-danger-50 border border-danger-200 text-danger-700 text-xs text-center font-medium shadow-soft"
         >
           {error}
         </motion.div>
@@ -120,16 +120,16 @@ export default function ScribbleDuel({ roomCode }) {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12 glass-card border border-surface-200 max-w-md mx-auto p-8 rounded-2xl"
+          className="text-center py-12 card-surface max-w-md mx-auto p-8 rounded-3xl shadow-card"
         >
-          <div className="w-14 h-14 rounded-2xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center mx-auto mb-4 shadow-xs">
-            <BrushIcon className="w-7 h-7" />
+          <div className="w-16 h-16 rounded-3xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center mx-auto mb-4 shadow-soft">
+            <BrushIcon className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-surface-950 mb-2">Scribble Duel</h2>
-          <p className="text-surface-600 text-xs sm:text-sm mb-6 leading-relaxed">
+          <h2 className="text-2xl font-heading font-black text-surface-950 mb-2">Scribble Duel</h2>
+          <p className="text-surface-600 text-xs sm:text-sm mb-7 leading-relaxed">
             Take turns drawing and guessing words against the clock! Fast guesses earn higher bonus points.
           </p>
-          <Button onClick={() => startGame(6)} size="lg" className="w-full font-heading font-bold">
+          <Button onClick={() => startGame(6)} size="lg" className="w-full font-heading font-bold rounded-2xl shadow-soft">
             <PlayIcon className="w-4 h-4" />
             <span>Start 6 Rounds</span>
           </Button>
@@ -144,23 +144,23 @@ export default function ScribbleDuel({ roomCode }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="space-y-3"
+            className="space-y-4"
           >
             {role === 'drawer' ? (
               /* Drawer View */
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {/* Word to Draw Banner */}
-                <div className="text-center bg-white p-3.5 rounded-2xl border border-surface-200 shadow-architect">
-                  <span className="text-[11px] text-surface-500 font-semibold uppercase tracking-wider block mb-0.5">
+                <div className="text-center bg-white p-4 rounded-3xl border border-black/[0.06] shadow-card">
+                  <span className="text-xs text-surface-400 font-heading font-bold uppercase tracking-widest block mb-1">
                     Your Secret Word to Draw
                   </span>
-                  <span className="text-2xl font-heading font-black text-primary-700 uppercase tracking-widest">
+                  <span className="text-3xl font-heading font-black text-primary-700 uppercase tracking-widest">
                     {word}
                   </span>
                 </div>
 
                 {/* Toolbar */}
-                <div className="glass-card !p-2 sm:!p-3 border border-surface-200">
+                <div className="card-surface !p-3">
                   <ColorPalette
                     selectedColor={brushColor}
                     onColorChange={setBrushColor}
@@ -185,30 +185,30 @@ export default function ScribbleDuel({ roomCode }) {
 
                 {/* Drawer's Live Guess Feed */}
                 {guesses.length > 0 && (
-                  <div className="bg-white p-3 rounded-2xl border border-surface-200 space-y-1.5 max-h-28 overflow-y-auto custom-scrollbar shadow-xs">
-                    <p className="text-[10px] text-surface-400 uppercase tracking-wider font-bold">
+                  <div className="card-surface p-4 space-y-2 max-h-32 overflow-y-auto">
+                    <p className="text-[11px] text-surface-400 uppercase tracking-widest font-heading font-bold">
                       Friend&apos;s Guesses:
                     </p>
                     {guesses.map((g, i) => (
                       <div
                         key={i}
-                        className={`text-xs px-2.5 py-1 rounded-lg flex items-center justify-between ${
+                        className={`text-xs px-3 py-1.5 rounded-xl flex items-center justify-between font-medium ${
                           g.isCorrect
-                            ? 'text-emerald-700 bg-emerald-50 border border-emerald-200'
+                            ? 'text-emerald-700 bg-emerald-50 border border-emerald-200 font-bold'
                             : g.isClose
-                              ? 'text-amber-700 bg-amber-50 border border-amber-200'
-                              : 'text-surface-700 bg-surface-50'
+                              ? 'text-amber-700 bg-amber-50 border border-amber-200 font-bold'
+                              : 'text-surface-800 bg-surface-100'
                         }`}
                       >
                         <span>{g.playerName}: {g.text}</span>
                         {g.isCorrect && (
                           <span className="font-bold flex items-center gap-1 text-emerald-700">
-                            <CheckIcon className="w-3 h-3" /> Correct!
+                            <CheckIcon className="w-3.5 h-3.5" /> Correct!
                           </span>
                         )}
                         {g.isClose && !g.isCorrect && (
                           <span className="font-bold flex items-center gap-1 text-amber-700">
-                            <FlameIcon className="w-3 h-3" /> Very close!
+                            <FlameIcon className="w-3.5 h-3.5" /> Very close!
                           </span>
                         )}
                       </div>
@@ -232,41 +232,47 @@ export default function ScribbleDuel({ roomCode }) {
         )}
       </AnimatePresence>
 
-      {/* Round End Results */}
+      {/* Round End Modal / Overlay */}
       {phase === 'round-end' && roundEndData && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-10 glass-card max-w-md mx-auto rounded-2xl border border-surface-200 shadow-modal p-6 sm:p-8"
+          className="card-surface p-7 sm:p-9 max-w-md mx-auto text-center space-y-4 shadow-modal"
         >
-          <div className="w-14 h-14 rounded-2xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center mx-auto mb-3">
-            {roundEndData.guessedCorrectly ? (
-              <CheckIcon className="w-7 h-7 text-emerald-600" />
-            ) : (
-              <ClockIcon className="w-7 h-7 text-amber-600" />
-            )}
+          <div className="w-14 h-14 rounded-2xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center mx-auto shadow-soft">
+            <CheckIcon className="w-7 h-7" />
           </div>
-          <h3 className="text-2xl font-heading font-bold text-surface-950 mb-1">
-            {roundEndData.guessedCorrectly ? 'Guessed Correctly!' : "Time's Up!"}
+
+          <h3 className="text-xl font-heading font-extrabold text-surface-950">
+            {roundEndData.guessedCorrectly ? 'Word Guessed!' : "Time's Up!"}
           </h3>
-          <p className="text-surface-600 text-xs sm:text-sm mb-2">
-            The word was: <span className="font-bold text-primary-700 font-mono text-base">&quot;{roundEndData.word}&quot;</span>
+
+          <p className="text-xs text-surface-500">
+            The word was{' '}
+            <span className="font-heading font-black text-primary-700 uppercase tracking-wider text-sm">
+              {roundEndData.word}
+            </span>
           </p>
+
           {roundEndData.guessedCorrectly && (
-            <p className="text-emerald-700 font-bold text-base mb-3">
-              +{roundEndData.points} Points Awarded
-            </p>
+            <div className="py-2.5 px-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs font-bold text-emerald-800 flex items-center justify-center gap-2">
+              <ClockIcon className="w-4 h-4 text-emerald-600" />
+              <span>
+                Guessed in {Math.round(roundEndData.timeTaken / 1000)}s (+{roundEndData.points} pts)
+              </span>
+            </div>
           )}
-          <p className="text-xs text-surface-500 mt-4 animate-pulse font-medium">
-            {roundEndData.isLastRound ? 'Preparing final results…' : 'Next round starting soon…'}
-          </p>
+
+          <div className="pt-2 text-xs text-surface-400 font-medium animate-pulse">
+            {roundEndData.isLastRound ? 'Calculating final winner…' : 'Next round starting soon…'}
+          </div>
         </motion.div>
       )}
 
-      {/* Game End Scoreboard */}
+      {/* Final Game Scoreboard */}
       {phase === 'ended' && endData && (
         <Scoreboard
-          data={endData}
+          endData={endData}
           playerId={playerId}
           onPlayAgain={() => playAgain(6)}
           onBackToHub={handleBackToHub}

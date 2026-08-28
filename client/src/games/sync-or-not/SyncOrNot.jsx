@@ -42,25 +42,29 @@ export default function SyncOrNot({ roomCode }) {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-28">
       {/* Game Header Bar */}
-      <div className="flex items-center justify-between mb-6 bg-white p-3.5 sm:px-5 sm:py-4 rounded-2xl border border-surface-200 shadow-architect">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-secondary-50 border border-secondary-200 text-secondary-600 flex items-center justify-center shadow-xs">
-            <CompassIcon className="w-5 h-5" />
+      <div className="flex items-center justify-between mb-8 bg-white p-4 sm:px-6 sm:py-4.5 rounded-3xl border border-black/[0.06] shadow-card">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shadow-soft">
+            <CompassIcon className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-sm sm:text-base font-heading font-bold text-surface-950 leading-tight">
+            <h2 className="text-base sm:text-lg font-heading font-extrabold text-surface-950 leading-tight">
               Sync or Not
             </h2>
             {phase === 'question' || phase === 'reveal' ? (
-              <p className="text-[11px] text-surface-500">
-                Round {round + 1} of {totalRounds} • Select your preference
+              <p className="text-xs text-surface-500 font-medium mt-0.5">
+                Round {round + 1} of {totalRounds} • Pick your choice
               </p>
-            ) : null}
+            ) : (
+              <p className="text-xs text-surface-500 font-medium mt-0.5">
+                Friendship choice matching
+              </p>
+            )}
           </div>
         </div>
 
         {phase === 'question' && (
-          <Timer timeLeft={timeLeft} duration={timeLimit} size="sm" />
+          <Timer timeLeft={timeLeft} duration={timeLimit} size="md" />
         )}
       </div>
 
@@ -69,7 +73,7 @@ export default function SyncOrNot({ roomCode }) {
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 rounded-xl bg-danger-50 border border-danger-200 text-danger-700 text-xs text-center"
+          className="mb-6 p-4 rounded-2xl bg-danger-50 border border-danger-200 text-danger-700 text-xs text-center font-medium shadow-soft"
         >
           {error}
         </motion.div>
@@ -80,16 +84,16 @@ export default function SyncOrNot({ roomCode }) {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12 glass-card border border-surface-200 max-w-md mx-auto p-8 rounded-2xl shadow-architect"
+          className="text-center py-12 card-surface max-w-md mx-auto p-8 rounded-3xl shadow-card"
         >
-          <div className="w-14 h-14 rounded-2xl bg-secondary-50 border border-secondary-200 text-secondary-600 flex items-center justify-center mx-auto mb-4 shadow-xs">
-            <CompassIcon className="w-7 h-7" />
+          <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-soft">
+            <CompassIcon className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-surface-950 mb-2">Sync or Not</h2>
-          <p className="text-surface-600 text-xs sm:text-sm mb-6 leading-relaxed">
+          <h2 className="text-2xl font-heading font-black text-surface-950 mb-2">Sync or Not</h2>
+          <p className="text-surface-600 text-xs sm:text-sm mb-7 leading-relaxed">
             Answer 10 intuitive questions live with your friend to measure your vibe synchronization.
           </p>
-          <Button onClick={() => startGame(10)} size="lg" className="w-full font-heading font-bold">
+          <Button onClick={() => startGame(10)} size="lg" className="w-full font-heading font-bold rounded-2xl shadow-soft">
             <PlayIcon className="w-4 h-4" />
             <span>Start 10 Rounds</span>
           </Button>

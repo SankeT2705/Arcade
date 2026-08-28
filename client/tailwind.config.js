@@ -4,21 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Architectural Neutral Palette (Slate/Zinc)
+        // Warm off-white & clean slate surfaces
         surface: {
           50: '#FFFFFF',
-          100: '#F8FAFC',
-          200: '#F1F5F9',
-          300: '#E2E8F0',
-          400: '#CBD5E1',
-          500: '#94A3B8',
-          600: '#64748B',
-          700: '#475569',
-          800: '#334155',
-          900: '#1E293B',
-          950: '#0F172A',
+          100: '#FAF9F6',
+          200: '#F3F2EE',
+          300: '#E7E5DF',
+          400: '#D5D2C9',
+          500: '#A8A499',
+          600: '#737067',
+          700: '#524F47',
+          800: '#36342E',
+          900: '#21201C',
+          950: '#141311',
         },
-        // Refined Cobalt / Indigo Primary
+        // Soft Indigo / Violet Primary
         primary: {
           50: '#EEF2FF',
           100: '#E0E7FF',
@@ -32,47 +32,70 @@ export default {
           900: '#312E81',
           950: '#1E1B4B',
         },
-        // Deep Teal Secondary
-        secondary: {
-          50: '#F0FDFA',
-          100: '#CCFBF1',
-          200: '#99F6E4',
-          300: '#5EEAD4',
-          400: '#2DD4BF',
-          500: '#14B8A6',
-          600: '#0D9488',
-          700: '#0F766E',
-          800: '#115E59',
-          900: '#134E4A',
-          950: '#042F2E',
+        // Harmonious Contextual Pastels
+        pastel: {
+          mint: {
+            bg: '#ECFDF5',
+            border: '#A7F3D0',
+            text: '#065F46',
+            accent: '#10B981',
+          },
+          sky: {
+            bg: '#F0F9FF',
+            border: '#BAE6FD',
+            text: '#075985',
+            accent: '#0284C7',
+          },
+          lavender: {
+            bg: '#F5F3FF',
+            border: '#DDD6FE',
+            text: '#5B21B6',
+            accent: '#8B5CF6',
+          },
+          peach: {
+            bg: '#FFF1F2',
+            border: '#FECDD3',
+            text: '#9F1239',
+            accent: '#F43F5E',
+          },
+          amber: {
+            bg: '#FFFBEB',
+            border: '#FDE68A',
+            text: '#92400E',
+            accent: '#F59E0B',
+          },
+          coral: {
+            bg: '#FFF7ED',
+            border: '#FED7AA',
+            text: '#9A3412',
+            accent: '#EA580C',
+          },
         },
-        // Warm Amber Accent
-        accent: {
-          50: '#FFFBEB',
-          100: '#FEF3C7',
-          200: '#FDE68A',
-          300: '#FCD34D',
-          400: '#FBBF24',
-          500: '#F59E0B',
-          600: '#D97706',
-          700: '#B45309',
-          800: '#92400E',
-          900: '#78350F',
-          950: '#451A03',
+        // Player identity dual-tone colors
+        playerA: {
+          bg: '#EEF2FF',
+          border: '#C7D2FE',
+          accent: '#4F46E5',
+          text: '#3730A3',
+        },
+        playerB: {
+          bg: '#FFF1F2',
+          border: '#FECDD3',
+          accent: '#F43F5E',
+          text: '#9F1239',
         },
         success: {
-          50: '#F0FDF4',
-          400: '#4ADE80',
-          500: '#22C55E',
-          600: '#16A34A',
-          700: '#15803D',
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          500: '#10B981',
+          600: '#059669',
+          700: '#047857',
         },
         danger: {
           50: '#FEF2F2',
-          400: '#F87171',
+          100: '#FEE2E2',
           500: '#EF4444',
           600: '#DC2626',
-          700: '#B91C1C',
         },
       },
       fontFamily: {
@@ -81,11 +104,11 @@ export default {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       boxShadow: {
-        architect: '0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05)',
-        card: '0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(226, 232, 240, 0.8)',
-        'card-hover': '0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(99, 102, 241, 0.3)',
-        modal: '0 25px 50px -12px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(226, 232, 240, 0.9)',
-        glow: '0 0 20px -3px rgba(79, 70, 229, 0.25)',
+        soft: '0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+        card: '0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02)',
+        'card-hover': '0 20px 40px -8px rgba(99, 102, 241, 0.09), 0 6px 16px -4px rgba(0, 0, 0, 0.04)',
+        modal: '0 25px 60px -15px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(226, 232, 240, 0.8)',
+        glow: '0 0 25px -4px rgba(99, 102, 241, 0.35)',
       },
     },
   },
