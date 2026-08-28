@@ -29,6 +29,16 @@ const app = express();
 app.use(cors({ origin: corsOriginChecker, credentials: true }));
 app.use(express.json());
 
+// Root status
+app.get('/', (_req, res) => {
+  res.json({
+    name: 'Duo Arcade Server',
+    status: 'online',
+    uptime: `${Math.floor(process.uptime())}s`,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
