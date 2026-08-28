@@ -75,14 +75,14 @@ export default function GameHub() {
       {/* ─── Hero Section (Split Layout) ────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-16 sm:mb-20">
         {/* Left Column: Headlines & Actions */}
-        <div className="lg:col-span-7 text-left space-y-6">
+        <div className="lg:col-span-7 text-left space-y-5">
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-primary-50 via-pink-50 to-amber-50 border border-primary-200/80 text-primary-700 text-xs font-heading font-extrabold tracking-wide shadow-soft"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-primary-50 via-pink-50 to-amber-50 border border-primary-200/80 text-primary-700 text-xs font-heading font-bold shadow-soft"
           >
             <SparklesIcon className="w-3.5 h-3.5 text-primary-600" />
-            <span>2-Player Real-Time Friendship Games</span>
+            <span>2-Player Real-Time Games</span>
           </motion.div>
 
           <motion.h1
@@ -103,7 +103,7 @@ export default function GameHub() {
             transition={{ duration: 0.4, delay: 0.12 }}
             className="text-surface-600 text-base sm:text-lg max-w-lg leading-relaxed font-normal"
           >
-            Create a room, invite a friend, and discover how well your choices and instincts match through live interactive games.
+            Create a room, invite a friend, and discover how well your choices and instincts match.
           </motion.p>
 
           {/* CTAs */}
@@ -133,7 +133,7 @@ export default function GameHub() {
           </motion.div>
         </div>
 
-        {/* Right Column: Product-Native Interactive Visual */}
+        {/* Right Column: Interactive Visual */}
         <div className="lg:col-span-5 relative flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
@@ -141,15 +141,15 @@ export default function GameHub() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="w-full max-w-md bg-white/95 border border-black/[0.06] rounded-3xl p-6 shadow-card relative overflow-hidden"
           >
-            {/* Ambient inner luminous multi-pastel gradient */}
+            {/* Ambient inner soft background */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-amber-50/20 to-rose-50/50 pointer-events-none" />
 
-            {/* Room Header Pill */}
+            {/* Room Status Pill */}
             <div className="flex items-center justify-between mb-6 relative z-10">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-semibold text-surface-600 uppercase tracking-wider">
-                  Live Match Room
+                <span className="text-xs font-semibold text-surface-600">
+                  Live Match
                 </span>
               </div>
               <span className="text-[11px] font-mono font-bold text-primary-700 bg-primary-50 border border-primary-200 px-2.5 py-0.5 rounded-full shadow-soft">
@@ -159,7 +159,6 @@ export default function GameHub() {
 
             {/* Two Players Connected by Live Sync Beam */}
             <div className="flex items-center justify-between relative z-10 mb-6 py-2">
-              {/* Player 1 Card */}
               <div className="flex flex-col items-center gap-1.5">
                 <Avatar name="Alex" role="playerA" size="lg" connected={true} />
                 <span className="text-xs font-heading font-bold text-surface-900">Alex</span>
@@ -183,7 +182,6 @@ export default function GameHub() {
                 </div>
               </div>
 
-              {/* Player 2 Card */}
               <div className="flex flex-col items-center gap-1.5">
                 <Avatar name="Sam" role="playerB" size="lg" connected={true} />
                 <span className="text-xs font-heading font-bold text-surface-900">Sam</span>
@@ -193,24 +191,15 @@ export default function GameHub() {
               </div>
             </div>
 
-            {/* Floating Choice Chips */}
-            <div className="space-y-2.5 relative z-10">
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-surface-50/80 border border-black/[0.04] shadow-soft">
-                <span className="text-xs font-heading font-bold text-surface-700">Would you rather...</span>
-                <span className="text-[10px] font-extrabold text-primary-700 uppercase tracking-wider bg-primary-50 px-2.5 py-0.5 rounded-md border border-primary-200">
-                  Food & Vibe
-                </span>
+            {/* Choice Preview Chips */}
+            <div className="grid grid-cols-2 gap-2 text-center text-xs font-heading font-bold relative z-10">
+              <div className="p-2.5 rounded-xl bg-primary-50/80 border border-primary-200 text-primary-800 flex items-center justify-center gap-1.5 shadow-soft">
+                <CheckIcon className="w-3.5 h-3.5 text-primary-600" />
+                <span>Paneer Tikka</span>
               </div>
-
-              <div className="grid grid-cols-2 gap-2 text-center text-xs font-heading font-bold">
-                <div className="p-2.5 rounded-xl bg-primary-50/80 border border-primary-200 text-primary-800 flex items-center justify-center gap-1.5 shadow-soft">
-                  <CheckIcon className="w-3.5 h-3.5 text-primary-600" />
-                  <span>Paneer Tikka</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-pink-50/80 border border-pink-200 text-pink-800 flex items-center justify-center gap-1.5 shadow-soft">
-                  <CheckIcon className="w-3.5 h-3.5 text-pink-600" />
-                  <span>Paneer Tikka</span>
-                </div>
+              <div className="p-2.5 rounded-xl bg-pink-50/80 border border-pink-200 text-pink-800 flex items-center justify-center gap-1.5 shadow-soft">
+                <CheckIcon className="w-3.5 h-3.5 text-pink-600" />
+                <span>Paneer Tikka</span>
               </div>
             </div>
           </motion.div>
@@ -234,19 +223,19 @@ export default function GameHub() {
         </motion.div>
       )}
 
-      {/* ─── Featured Games Section ────────────────────────── */}
-      <div className="space-y-6">
+      {/* ─── Games Section ─────────────────────────────────── */}
+      <div className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl sm:text-2xl font-heading font-bold text-surface-950 tracking-tight">
-              Featured Games
+              Games
             </h2>
             <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
-              Pick any game once both players are inside the room
+              Select a game once both players are in the room
             </p>
           </div>
           <span className="text-xs text-primary-700 bg-primary-50 px-3.5 py-1.5 rounded-xl border border-primary-200 font-bold shadow-soft">
-            2 Games Available
+            2 Games
           </span>
         </div>
 
@@ -288,7 +277,7 @@ export default function GameHub() {
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5 font-bold shadow-soft">
                         <ZapIcon className="w-3 h-3 text-amber-500" />
-                        Live Synchronized
+                        Real-Time Sync
                       </span>
                     </div>
                   </div>
@@ -359,7 +348,7 @@ export default function GameHub() {
 
           <div>
             <label className="block text-xs font-semibold text-surface-700 uppercase tracking-wider mb-1.5">
-              6-Character Room Code
+              Room Code
             </label>
             <input
               type="text"

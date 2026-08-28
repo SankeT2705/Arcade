@@ -17,17 +17,16 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
     },
     archetype: {
       name: data.syncPercent >= 80 ? 'Unspoken Telepathy' : data.syncPercent >= 60 ? 'Balanced Resonance' : 'Complementary Counterparts',
-      tagline: data.syncPercent >= 80 ? 'Effortless Resonance' : data.syncPercent >= 60 ? 'Strong Core Alignment' : 'Dynamic Yin & Yang',
-      badge: data.syncPercent >= 80 ? '✨ Soul Link' : data.syncPercent >= 60 ? '⚡ Deep Resonance' : '🧩 Complementary Duo',
+      badge: data.syncPercent >= 80 ? 'Soul Link' : data.syncPercent >= 60 ? 'Deep Resonance' : 'Complementary Duo',
       description: data.syncPercent >= 80
-        ? 'You operate on the exact same wavelength. Your instincts, emotional pace, and core values match almost effortlessly.'
+        ? 'You operate on the same wavelength with naturally matching instincts.'
         : data.syncPercent >= 60
-          ? 'Strong core alignment with enough complementary flavor to keep conversations inspiring, grounded, and engaging.'
-          : 'You bring different strengths and perspectives to the table, creating a rich dynamic where one covers the blind spots of the other.',
+          ? 'Strong core alignment with inspiring complementary viewpoints.'
+          : 'You bring distinct strengths that create a rich dynamic balance.',
     },
     insights: [
-      'Your emotional intuition and decision patterns create strong mutual trust.',
-      'You balance each other with complementary viewpoints in everyday choices.',
+      'Your intuitive choices create strong mutual understanding.',
+      'Complementary perspectives keep shared conversations exciting.',
     ],
   };
 
@@ -35,32 +34,28 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
 
   const dimensionsList = [
     {
-      title: 'Emotional Intuition & Values',
+      title: 'Emotional Intuition',
       score: analytics.dimensions?.emotionalIntuition || 75,
       color: 'from-primary-500 to-indigo-600',
       badgeBg: 'bg-primary-50 text-primary-700 border-primary-200',
-      desc: 'Gut instincts, trust patterns, and empathy',
     },
     {
       title: 'Communication & Conflict',
       score: analytics.dimensions?.communicationConflict || 80,
       color: 'from-emerald-500 to-teal-600',
       badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      desc: 'Expression style, resolving disagreements, space vs talks',
     },
     {
-      title: 'Taste, Food & Lifestyle',
+      title: 'Taste & Lifestyle',
       score: analytics.dimensions?.tasteLifestyle || 65,
       color: 'from-amber-500 to-orange-500',
       badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-      desc: 'Food favorites, culture, city vibe, and habits',
     },
     {
       title: 'Risk & Spontaneity',
       score: analytics.dimensions?.riskSpontaneity || 70,
       color: 'from-sky-500 to-blue-600',
       badgeBg: 'bg-sky-50 text-sky-700 border-sky-200',
-      desc: 'Spontaneous energy vs careful planning and stability',
     },
   ];
 
@@ -75,22 +70,22 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
         {/* Luminous multi-pastel backdrop */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 via-amber-50/30 to-rose-50/40 pointer-events-none" />
 
-        <div className="relative z-10 space-y-4">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-heading font-extrabold uppercase tracking-wider bg-white/90 border border-black/[0.06] text-primary-700 shadow-soft">
+        <div className="relative z-10 space-y-3.5">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-heading font-bold uppercase tracking-wider bg-white/90 border border-black/[0.06] text-primary-700 shadow-soft">
             <SparklesIcon className="w-3.5 h-3.5 text-primary-600" />
-            <span>{analytics.archetype?.badge || 'Psychological Mapping'}</span>
+            <span>{analytics.archetype?.badge || 'Compatibility'}</span>
           </span>
 
           <div>
             <span className="text-6xl sm:text-7xl font-heading font-black tracking-tight bg-gradient-to-r from-primary-700 via-indigo-700 to-pink-600 bg-clip-text text-transparent block">
               {data.syncPercent}%
             </span>
-            <span className="text-xs uppercase font-heading font-extrabold tracking-widest text-surface-400 mt-1 block">
-              Compatibility Score
+            <span className="text-xs uppercase font-heading font-bold tracking-widest text-surface-400 mt-1 block">
+              Sync Score
             </span>
           </div>
 
-          <div className="max-w-md mx-auto space-y-1.5">
+          <div className="max-w-md mx-auto space-y-1">
             <h2 className="text-2xl sm:text-3xl font-heading font-black text-surface-950 tracking-tight">
               {analytics.archetype?.name}
             </h2>
@@ -101,37 +96,27 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
         </div>
       </div>
 
-      {/* ─── Psychological Dimensions Breakdown ─────────────── */}
-      <div className="card-surface p-6 sm:p-8 text-left space-y-5 shadow-card">
+      {/* ─── Dimensions Breakdown ───────────────────────────── */}
+      <div className="card-surface p-6 sm:p-8 text-left space-y-4 shadow-card">
         <div className="flex items-center justify-between border-b border-black/[0.04] pb-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shadow-soft">
               <BrainIcon className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-sm font-heading font-extrabold text-surface-950">
-                Psychological Alignment Matrix
-              </h3>
-              <p className="text-[11px] text-surface-500">Technical behavioral mapping based on your live choices</p>
-            </div>
+            <h3 className="text-sm font-heading font-bold text-surface-950">
+              Alignment Matrix
+            </h3>
           </div>
-          <span className="text-[11px] font-bold text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded-full border border-primary-200 hidden sm:inline">
-            4 Dimensions
+          <span className="text-[11px] font-bold text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded-full border border-primary-200">
+            Analysis
           </span>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3.5 pt-1">
           {dimensionsList.map((dim, idx) => (
             <div key={idx} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <div>
-                  <span className="font-heading font-bold text-surface-900 block sm:inline mr-2">
-                    {dim.title}
-                  </span>
-                  <span className="text-[10px] text-surface-400 font-normal">
-                    {dim.desc}
-                  </span>
-                </div>
+              <div className="flex items-center justify-between text-xs font-heading font-bold text-surface-900">
+                <span>{dim.title}</span>
                 <span className={`font-mono font-black text-xs px-2 py-0.5 rounded-md border ${dim.badgeBg}`}>
                   {dim.score}%
                 </span>
@@ -142,7 +127,7 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${dim.score}%` }}
-                  transition={{ duration: 0.8, delay: 0.1 * idx, ease: 'easeOut' }}
+                  transition={{ duration: 0.8, delay: 0.08 * idx, ease: 'easeOut' }}
                   className={`h-full rounded-full bg-gradient-to-r ${dim.color}`}
                 />
               </div>
@@ -151,15 +136,15 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
         </div>
       </div>
 
-      {/* ─── Behavioral Insights & Key Takeaways ─────────────── */}
+      {/* ─── Insights ───────────────────────────────────────── */}
       {analytics.insights && analytics.insights.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
           {analytics.insights.map((insight, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-3xl bg-white border border-black/[0.05] shadow-soft flex items-start gap-3"
+              className="p-4 rounded-2xl bg-white border border-black/[0.05] shadow-soft flex items-start gap-3"
             >
-              <div className="w-7 h-7 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-lg bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
                 <SparklesIcon className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-surface-700 font-medium leading-relaxed">
@@ -171,7 +156,7 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
       )}
 
       {/* ─── Secondary Stats Grid ───────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3.5">
+      <div className="grid grid-cols-3 gap-3">
         <div className="card-surface p-4 text-center">
           <p className="text-2xl font-heading font-black text-amber-600 flex items-center justify-center gap-1">
             <span>{data.bestStreak}</span>
@@ -191,29 +176,26 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
         </div>
       </div>
 
-      {/* ─── Interactive Round-by-Round Timeline ─────────────── */}
+      {/* ─── Round Timeline ─────────────────────────────────── */}
       {data.results && data.results.length > 0 && (
         <div className="card-surface p-6 sm:p-7 text-left space-y-4 shadow-card">
-          <div className="flex items-center justify-between border-b border-black/[0.04] pb-3">
-            <div>
-              <h3 className="text-xs font-heading font-extrabold text-surface-950 uppercase tracking-wider">
-                Interactive Round Timeline
-              </h3>
-              <p className="text-[11px] text-surface-500">Tap any round circle to compare your choices</p>
-            </div>
-            <span className="text-[11px] text-primary-600 font-semibold">
-              {data.results.filter((r) => r.matched).length} of {data.results.length} matched
+          <div className="flex items-center justify-between border-b border-black/[0.04] pb-2.5">
+            <h3 className="text-xs font-heading font-bold text-surface-950 uppercase tracking-wider">
+              Round Timeline
+            </h3>
+            <span className="text-[11px] text-primary-600 font-medium">
+              {data.results.filter((r) => r.matched).length}/{data.results.length} matched
             </span>
           </div>
 
           {/* Timeline Pills */}
-          <div className="flex flex-wrap items-center gap-2 justify-center py-2">
+          <div className="flex flex-wrap items-center gap-2 justify-center py-1">
             {data.results.map((r, i) => {
               const isSelected = selectedRoundIndex === i;
               return (
                 <motion.button
                   key={i}
-                  whileHover={{ scale: 1.12 }}
+                  whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedRoundIndex(isSelected ? null : i)}
                   className={`w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-heading font-bold transition-all shadow-soft ${
@@ -225,7 +207,7 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
                       ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                       : 'bg-rose-50/70 text-rose-600 border border-rose-200'
                   }`}
-                  title={`Round ${i + 1}: ${r.matched ? 'Matched' : 'Different'}`}
+                  title={`Round ${i + 1}`}
                 >
                   {r.matched ? <CheckIcon className="w-4 h-4" /> : '✕'}
                 </motion.button>
@@ -233,18 +215,18 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
             })}
           </div>
 
-          {/* Expanded Round Inspector Card */}
+          {/* Expanded Round Inspector */}
           <AnimatePresence>
             {selectedRound && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="pt-4 border-t border-black/[0.04] space-y-3"
+                className="pt-3 border-t border-black/[0.04] space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-heading font-bold text-surface-900">
-                    Round {selectedRoundIndex + 1}: {selectedRound.question?.category || 'Dilemma'}
+                    Round {selectedRoundIndex + 1}: {selectedRound.question?.category || 'Question'}
                   </span>
                   <span
                     className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
@@ -253,7 +235,7 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
                         : 'bg-rose-50 text-rose-700 border border-rose-200'
                     }`}
                   >
-                    {selectedRound.matched ? 'In Sync ✓' : 'Different Perspectives 😄'}
+                    {selectedRound.matched ? 'Matched ✓' : 'Different Choices'}
                   </span>
                 </div>
 
@@ -278,7 +260,7 @@ export default function SummaryScreen({ data, onPlayAgain, onBackToHub }) {
       )}
 
       {/* ─── Actions ────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row gap-3.5 pt-2">
+      <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <Button onClick={onPlayAgain} className="flex-1 py-3.5 text-sm font-heading font-bold rounded-2xl shadow-soft">
           <RefreshIcon className="w-4 h-4" />
           <span>Play Again</span>

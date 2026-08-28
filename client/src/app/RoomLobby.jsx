@@ -1,27 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRoomContext } from './RoomContext';
 import { useSocketContext } from './SocketProvider';
 import { games, getGameById } from '../games/gameRegistry';
 import GameErrorBoundary from '../games/GameErrorBoundary';
-import Button from '../components/Button';
 import Card from '../components/Card';
+import Button from '../components/Button';
 import Avatar from '../components/Avatar';
-import LoadingSkeleton from '../components/LoadingSkeleton';
+import { useToast } from '../components/Toast';
 import {
   CopyIcon,
   CheckIcon,
+  ZapIcon,
+  RefreshIcon,
   LinkIcon,
   BrushIcon,
   CompassIcon,
   GamepadIcon,
   ArrowRightIcon,
-  RefreshIcon,
-  ZapIcon,
 } from '../components/Icons';
 import { copyToClipboard, getPlayerName, generateDefaultName } from '../lib/utils';
-import { useToast } from '../components/Toast';
 
 const container = {
   hidden: { opacity: 0 },
@@ -37,16 +36,23 @@ const item = {
 };
 
 function renderGameIcon(iconKey) {
-  if (iconKey === 'brush') return <BrushIcon className="w-5 h-5 text-primary-600" />;
-  if (iconKey === 'compass') return <CompassIcon className="w-5 h-5 text-emerald-600" />;
-  return <GamepadIcon className="w-5 h-5 text-primary-600" />;
+  if (iconKey === 'brush') return <BrushIcon className="w-6 h-6 text-primary-600" />;
+  if (iconKey === 'compass') return <CompassIcon className="w-6 h-6 text-emerald-600" />;
+  return <GamepadIcon className="w-6 h-6 text-primary-600" />;
 }
 
 export default function RoomLobby() {
   const { roomCode } = useParams();
   const navigate = useNavigate();
-  const { room, joinRoom, isLoading, error, partnerDisconnected, selectGame, backToHub, clearError } =
-    useRoomContext();
+  const {
+    room,
+    selectGame,
+    backToHub,
+    partnerDisconnected,
+    joinRoom,
+    error,
+    clearError,
+  } = useRoomContext();
   const { playerId } = useSocketContext();
   const { addToast } = useToast();
   const [GameComponent, setGameComponent] = useState(null);
@@ -79,7 +85,7 @@ export default function RoomLobby() {
     const success = await copyToClipboard(url);
     if (success) {
       setCopied(true);
-      addToast('Invite link copied to clipboard!', 'success');
+      addToast('Invite link copied!', 'success');
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -125,73 +131,40 @@ export default function RoomLobby() {
     );
   }
 
-  // If user is not yet in room (e.g. visiting via invite link)
+  // Not in room yet? (Joined via direct URL)
   if (!room) {
-    if (isLoading) {
-      return (
-        <div className="max-w-md mx-auto px-4 py-16 text-center">
-          <LoadingSkeleton type="card" count={2} />
-          <p className="text-surface-500 text-sm mt-4 animate-pulse">
-            Connecting to room {roomCode}…
-          </p>
-        </div>
-      );
-    }
-
     return (
-      <div className="max-w-md mx-auto px-4 py-12 sm:py-16">
-        <motion.div initial={{ opacity: 0, scale: 0.98, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}>
-          <div className="card-surface p-7 sm:p-9 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center mx-auto mb-4 shadow-soft">
-              <GamepadIcon className="w-7 h-7" />
-            </div>
-
-            <h2 className="text-2xl font-heading font-bold text-surface-950 mb-1">Join Room</h2>
-            <p className="text-surface-600 text-xs sm:text-sm mb-6">
-              You&apos;ve been invited to room{' '}
-              <span className="font-mono font-bold text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded-lg border border-primary-200">
-                {roomCode}
-              </span>
-            </p>
-
-            <form onSubmit={handleJoinWithName} className="space-y-4 text-left">
-              <div>
-                <label className="block text-xs font-semibold text-surface-700 uppercase tracking-wider mb-1.5">
-                  Enter Your Name
-                </label>
-                <input
-                  type="text"
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  placeholder="Your name"
-                  className="input-base text-base py-3"
-                  autoFocus
-                  maxLength={15}
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="w-full justify-center py-3.5 font-heading font-bold text-sm rounded-2xl"
-                disabled={!tempName.trim()}
-              >
-                Enter Game Lobby
-              </Button>
-            </form>
-
-            <div className="mt-6 pt-4 border-t border-black/[0.04]">
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                className="text-xs text-surface-500 hover:text-surface-800 transition-colors"
-              >
-                ← Return to Home
-              </button>
-            </div>
+      <div className="max-w-md mx-auto px-4 py-16 text-center">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="card-surface p-8 shadow-card">
+          <div className="w-14 h-14 rounded-2xl bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center mx-auto mb-4 shadow-soft">
+            <LinkIcon className="w-6 h-6" />
           </div>
+          <h2 className="text-2xl font-heading font-black text-surface-950 mb-1">
+            Join Room
+          </h2>
+          <p className="text-surface-500 text-xs font-mono mb-6">
+            Room #{roomCode}
+          </p>
+
+          <form onSubmit={handleJoinWithName} className="space-y-4 text-left">
+            <div>
+              <label className="block text-xs font-semibold text-surface-700 uppercase tracking-wider mb-1.5">
+                Your Name
+              </label>
+              <input
+                type="text"
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                className="input-base"
+                placeholder="Enter your name"
+                maxLength={20}
+                autoFocus
+              />
+            </div>
+            <Button type="submit" disabled={!tempName.trim()} className="w-full py-3.5 text-sm font-heading font-bold rounded-2xl shadow-soft">
+              Enter Room
+            </Button>
+          </form>
         </motion.div>
       </div>
     );
@@ -219,7 +192,7 @@ export default function RoomLobby() {
             onClick={() => navigate('/')}
             className="btn-ghost text-xs text-surface-600 self-start sm:self-center"
           >
-            ← Back to Home
+            ← Home
           </button>
 
           {/* Room Code Card */}
@@ -251,14 +224,14 @@ export default function RoomLobby() {
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <h3 className="text-xs font-bold text-surface-600 uppercase tracking-wider">
-                Social Room ({room?.players?.length || 0}/2)
+                Players ({room?.players?.length || 0}/2)
               </h3>
             </div>
 
             {isReady ? (
               <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-soft">
                 <ZapIcon className="w-3.5 h-3.5 text-emerald-500" />
-                You&apos;re both here
+                Both Players Ready
               </span>
             ) : (
               <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full animate-pulse shadow-soft">
@@ -281,7 +254,7 @@ export default function RoomLobby() {
                 </div>
                 <p className="text-base font-heading font-bold text-surface-950 max-w-[140px] truncate">{me.name}</p>
                 <span className="text-[11px] text-primary-700 bg-primary-100/70 border border-primary-200 px-2.5 py-0.5 rounded-full font-semibold mt-1">
-                  Ready (You)
+                  You
                 </span>
               </motion.div>
             )}
@@ -322,7 +295,7 @@ export default function RoomLobby() {
                     </span>
                   ) : (
                     <span className="text-[11px] text-rose-700 bg-rose-100/70 border border-rose-200 px-2.5 py-0.5 rounded-full font-semibold mt-1">
-                      Ready (Friend)
+                      Friend
                     </span>
                   )}
                 </motion.div>
@@ -353,7 +326,7 @@ export default function RoomLobby() {
               exit={{ opacity: 0, height: 0 }}
               className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs text-center font-medium shadow-soft"
             >
-              Your friend disconnected. Room will stay open for 60 seconds…
+              Your friend disconnected. Reconnecting…
             </motion.div>
           )}
         </AnimatePresence>
@@ -362,7 +335,7 @@ export default function RoomLobby() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-heading font-bold text-surface-950">
-              Select a Game to Play
+              Select Game
             </h3>
             {!isReady && (
               <span className="text-xs text-surface-500 font-medium">
