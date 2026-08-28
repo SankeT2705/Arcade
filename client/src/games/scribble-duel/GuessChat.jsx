@@ -30,11 +30,11 @@ export default function GuessChat({ guesses, onSubmit, disabled, className = '' 
   };
 
   return (
-    <div className={cn('flex flex-col glass-card !p-3 sm:!p-4 border border-surface-200 shadow-architect', className)}>
+    <div className={cn('flex flex-col card-surface !p-4 shadow-card', className)}>
       {/* Guess history feed */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto custom-scrollbar space-y-1.5 mb-3 max-h-36 min-h-[50px] pr-1"
+        className="flex-1 overflow-y-auto custom-scrollbar space-y-2 mb-3 max-h-36 min-h-[50px] pr-1"
       >
         <AnimatePresence mode="popLayout">
           {guesses.map((g, i) => (
@@ -43,33 +43,33 @@ export default function GuessChat({ guesses, onSubmit, disabled, className = '' 
               initial={{ opacity: 0, y: 6, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               className={cn(
-                'px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center justify-between shadow-xs',
+                'px-3.5 py-2 rounded-2xl text-xs sm:text-sm flex items-center justify-between shadow-soft font-medium',
                 g.isCorrect
-                  ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                  ? 'bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold'
                   : g.isClose
-                    ? 'bg-amber-50 border border-amber-200 text-amber-800'
-                    : 'bg-surface-50 border border-surface-200 text-surface-800',
+                    ? 'bg-amber-50 border border-amber-200 text-amber-800 font-bold'
+                    : 'bg-surface-100/80 border border-black/[0.04] text-surface-800',
               )}
             >
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-surface-950">{g.text}</span>
-                <span className="text-[10px] text-surface-400">by {g.playerName}</span>
+                <span className="text-[10px] text-surface-400 font-normal">by {g.playerName}</span>
               </div>
               {g.isCorrect && (
                 <span className="text-emerald-700 font-bold text-xs flex items-center gap-1">
-                  <CheckIcon className="w-3 h-3" /> Correct!
+                  <CheckIcon className="w-3.5 h-3.5" /> Correct!
                 </span>
               )}
               {g.isClose && !g.isCorrect && (
                 <span className="text-amber-700 font-bold text-xs flex items-center gap-1">
-                  <FlameIcon className="w-3 h-3" /> Close!
+                  <FlameIcon className="w-3.5 h-3.5" /> Very close!
                 </span>
               )}
             </motion.div>
           ))}
         </AnimatePresence>
         {guesses.length === 0 && (
-          <p className="text-surface-400 text-xs text-center py-2">
+          <p className="text-surface-400 text-xs text-center py-2.5 font-medium">
             Type your guess below and press Enter
           </p>
         )}
@@ -82,7 +82,7 @@ export default function GuessChat({ guesses, onSubmit, disabled, className = '' 
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="input-base flex-1 !py-2 text-sm"
+          className="input-base flex-1 !py-2.5 text-sm"
           placeholder={disabled ? 'Waiting for drawer…' : 'Type your guess…'}
           disabled={disabled}
           maxLength={50}
@@ -91,7 +91,7 @@ export default function GuessChat({ guesses, onSubmit, disabled, className = '' 
         <button
           type="submit"
           disabled={disabled || !input.trim()}
-          className="btn-primary !px-4 !py-2 text-xs sm:text-sm font-semibold shrink-0"
+          className="btn-primary !px-5 !py-2.5 text-xs sm:text-sm font-heading font-bold shrink-0 rounded-2xl shadow-soft"
         >
           <span>Guess</span>
           <SendIcon className="w-3.5 h-3.5" />

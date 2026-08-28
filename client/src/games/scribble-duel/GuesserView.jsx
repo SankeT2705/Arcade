@@ -14,10 +14,10 @@ export default function GuesserView({
   const slots = Array.from({ length: wordLength || hintPattern.length || 0 });
 
   return (
-    <div className="space-y-3.5">
+    <div className="space-y-4">
       {/* Word Length & Progressive Letter Hint Slots */}
-      <div className="text-center bg-white p-3.5 rounded-2xl border border-surface-200 shadow-architect">
-        <span className="text-[11px] text-surface-500 font-semibold uppercase tracking-wider block mb-1">
+      <div className="text-center card-surface p-4 shadow-card">
+        <span className="text-[11px] text-surface-400 font-heading font-bold uppercase tracking-widest block mb-2">
           Guess the Secret Word
         </span>
         <div className="flex items-center justify-center gap-1.5 py-1 flex-wrap">
@@ -32,7 +32,7 @@ export default function GuesserView({
             return (
               <span
                 key={i}
-                className="w-7 h-9 border-b-2 border-primary-600 inline-flex items-center justify-center font-mono font-black text-primary-800 text-lg bg-surface-50 rounded-t shadow-xs relative overflow-hidden"
+                className="w-8 h-10 border-b-2 border-primary-600 inline-flex items-center justify-center font-mono font-black text-primary-800 text-lg bg-surface-100/80 rounded-t-lg shadow-soft relative overflow-hidden"
               >
                 {letter ? (
                   <motion.span
@@ -46,7 +46,7 @@ export default function GuesserView({
               </span>
             );
           })}
-          <span className="text-xs text-surface-500 font-semibold ml-2 self-center">
+          <span className="text-xs text-surface-500 font-semibold ml-2.5 self-center">
             ({wordLength} Letters)
           </span>
         </div>
