@@ -1,0 +1,29 @@
+{
+  "name": "duo-arcade",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Duo Arcade — a real-time 2-player game hub",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n client,server -c cyan,magenta \"npm run dev -w client\" \"npm run dev -w server\"",
+    "dev:client": "npm run dev -w client",
+    "dev:server": "npm run dev -w server",
+    "start": "npm start -w server",
+    "build": "npm run build -w client",
+    "lint": "eslint . --ext .js,.jsx,.cjs",
+    "lint:fix": "eslint . --ext .js,.jsx,.cjs --fix",
+    "format": "prettier --write \"**/*.{js,jsx,cjs,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,cjs,json,css,md}\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5"
+  }
+}
